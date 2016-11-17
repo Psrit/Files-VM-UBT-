@@ -1,7 +1,7 @@
 from PIL import Image
 import os
 
-infile = "./fig/pycharm.png"
+infile = "../fig/pycharm.png"
 pil_im = Image.open(infile)
 
 # format convert
@@ -13,15 +13,15 @@ if infile != outfile_format_convert:
         print("cannot convert" + infile)
 
 # create thumbnail
-outfile_thumbnail = pil_im.thumbnail((128, 128))
+img_thumbnail = pil_im.thumbnail((128, 128))
 
 # crop and paste
-box = pil_im.size() / 2
+box = (pil_im.size[0] / 4, pil_im.size[1] / 4, pil_im.size[0] * 3 / 4, pil_im.size[1] * 3 / 4)
 region = pil_im.crop(box)
 
 region = region.transpose(Image.ROTATE_180)
-outfile_crop_paste = pil_im.paste(region, box)
+img_crop_paste = pil_im.paste(region, box)
 
 # resize and rotate
-outfile_resize = pil_im.resize((128, 128))
-outfile_rotate = pil_im.rotate(45)
+img_resize = pil_im.resize((128, 128))
+img_rotate = pil_im.rotate(45)
