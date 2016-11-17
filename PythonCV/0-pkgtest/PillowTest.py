@@ -1,6 +1,9 @@
 from PIL import Image
 import os
 
+# import scipy.misc
+# from pylab import *
+
 infile = "../fig/pycharm.png"
 pil_im = Image.open(infile)
 
@@ -9,6 +12,7 @@ outfile_format_convert = os.path.splitext(infile)[0] + ".jpg"
 if infile != outfile_format_convert:
     try:
         Image.open(infile).save(outfile_format_convert)
+        # scipy.misc.imsave(outfile_format_convert, array(Image.open(infile)))
     except IOError:
         print("cannot convert" + infile)
 
