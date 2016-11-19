@@ -28,7 +28,7 @@ def gaussian_blur(input, sigma=1.6, size=-1):
         size += 1
     gaussian_array1d = numpy.arange(-(size - 1) / 2, (size - 1) / 2 + 1)
     gaussian_array1d = numpy.exp(-(gaussian_array1d ** 2) / (2 * (sigma ** 2))) / \
-                       numpy.sqrt(2 * numpy.pi) * sigma
+                       (numpy.sqrt(2 * numpy.pi) * sigma)
     gaussian_array1d /= sum(gaussian_array1d)
 
     im_conv = numpy.zeros(input.shape)
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_grayscale.jpg")
 
     t_start = time.time()
-    im_blurred = Image.fromarray(gaussian_blur(im, 10))
+    im_blurred = gaussian_blur(im, 10)
     # im_blurred = filters.gaussian_filter(im, 10)
     t_finish = time.time()
 
