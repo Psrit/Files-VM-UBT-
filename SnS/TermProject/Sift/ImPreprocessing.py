@@ -1,6 +1,7 @@
 # import math
 import numpy
 
+
 def gaussian_blur(input, sigma=1.6, size=-1):
     """
     Gaussian blurring using 2-dimensional square Gaussian kernel.
@@ -26,11 +27,12 @@ def gaussian_blur(input, sigma=1.6, size=-1):
     if size % 2 == 0:
         size += 1
     gaussian_array1d = numpy.arange(-(size - 1) / 2, (size - 1) / 2 + 1)
-    gaussian_array1d = numpy.exp(-(gaussian_array1d ** 2) / (2 * sigma)) / \
-                       (2 * numpy.pi * (sigma ** 2))
+    gaussian_array1d = numpy.exp(-(gaussian_array1d ** 2) / (2 * (sigma ** 2))) / \
+                       numpy.sqrt(2 * numpy.pi) * sigma
     gaussian_array1d /= sum(gaussian_array1d)
 
     im_conv = numpy.zeros(input.shape)
+    im_blurred = numpy.zeros(input.shape)
     imrows, imcols = input.shape
     print "image size: ", input.shape
 
@@ -44,18 +46,17 @@ def gaussian_blur(input, sigma=1.6, size=-1):
         for col in range(0, imcols):
             for index in range(max(-(size - 1) / 2 + row, 0),
                                min((size - 1) / 2 + row + 1, imrows)):
-                im_conv[row, col] \
-                    += input[index, col] * gaussian_array1d[index - row + (size - 1) / 2]
+                im_blurred[row, col] \
+                    += im_conv[index, col] * gaussian_array1d[index - row + (size - 1) / 2]
 
-    return im_conv
+    return im_blurred
 
 
 if __name__ == "__main__":
     import os
     from PIL import Image
-    import scipy
     from scipy import *
-    import scipy.misc
+    from scipy.ndimage import filters
     from pylab import *
     import time
 
@@ -72,12 +73,12 @@ if __name__ == "__main__":
         test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_grayscale.jpg")
 
     t_start = time.time()
-    im_blurred = Image.fromarray(gaussian_blur(im, 100))
+    im_blurred = Image.fromarray(gaussian_blur(im, 10))
+    # im_blurred = filters.gaussian_filter(im, 10)
     t_finish = time.time()
 
     print "Gaussian blurring has cost ", t_finish - t_start, " seconds"
     imshow(Image.fromarray(uint8(im_blurred)))
     show()
     Image.fromarray(uint8(im_blurred)).save(
-        test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_out.jpg")
-
+        test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_out10.jpg")
