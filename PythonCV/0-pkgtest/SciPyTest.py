@@ -2,6 +2,7 @@ from PIL import Image
 from numpy import *
 from pylab import *
 from scipy.ndimage import filters
+import os
 
 import scipy
 from scipy.misc import imsave
@@ -43,6 +44,7 @@ imx = zeros(im.shape)
 filters.gaussian_filter(im, (sigma, sigma), (0, 1), imx)
 imy = zeros(im.shape)
 filters.gaussian_filter(im, (sigma, sigma), (1, 0), imy)
+show()
 
 # other SciPy modules
 # ---------------------------------------------------------
@@ -57,4 +59,7 @@ filters.gaussian_filter(im, (sigma, sigma), (1, 0), imy)
 # 2. saving array as images
 
 im = scipy.misc.face()
-imsave("./test_out/test_lena.jpg", im)
+test_out_path = "./test_out/"
+if os.path.exists(test_out_path) == False:
+    os.makedirs(test_out_path)
+imsave(test_out_path + "test_face.jpg", im)
