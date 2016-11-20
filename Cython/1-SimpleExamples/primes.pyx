@@ -24,4 +24,5 @@ def primes(int kmax):
             # before being passed to the append method
             result.append(n)
         n += 1
+
     return result

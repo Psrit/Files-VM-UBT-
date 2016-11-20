@@ -615,7 +615,7 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "1-SimpleExamples/primes.pyx",
+  "primes.pyx",
 };
 
 /*--- Type declarations ---*/
@@ -960,7 +960,7 @@ static PyObject *__pyx_pf_6primes_primes(CYTHON_UNUSED PyObject *__pyx_self, int
  *             # before being passed to the append method
  *             result.append(n)             # <<<<<<<<<<<<<<
  *         n += 1
- *     return result
+ * 
  */
       __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_n); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
@@ -980,14 +980,15 @@ static PyObject *__pyx_pf_6primes_primes(CYTHON_UNUSED PyObject *__pyx_self, int
  *             # before being passed to the append method
  *             result.append(n)
  *         n += 1             # <<<<<<<<<<<<<<
+ * 
  *     return result
  */
     __pyx_v_n = (__pyx_v_n + 1);
   }
 
-  /* "primes.pyx":27
- *             result.append(n)
+  /* "primes.pyx":28
  *         n += 1
+ * 
  *     return result             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
