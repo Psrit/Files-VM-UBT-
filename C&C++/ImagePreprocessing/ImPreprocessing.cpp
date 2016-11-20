@@ -3,26 +3,9 @@
 #include <stdio.h>
 #include <math.h>
 
+/* Gaussian blurring using 2-dimensional square Gaussian kernel. */
 double **GaussianBlur(int **input, int rowsOfInput, int colsOfInput,
                       double sigma = 1.6, int size = -1) {
-/*
- *
- * Gaussian blurring using 2-dimensional square Gaussian kernel.
- *
- * :param input: Image or ndarray
- *     Input image.
- * :param sigma: scalar (sequence of scalars are not supported yet)
- *     Standard deviation for Gaussian kernel. According to Lowe in his
- *     famous SIFT paper, sigma is set to be 1.6 (default here).
- * :param size: scalar (sequence of scalars are not supported yet)
- *     Size of the Gaussian kernel. If being negative or zero, size will
- *     be 'around' (6*sigma+1).
- *     size should be odd. If not, it will be increased by 1.
- * :return: ndarray
- *     Returned array of same shape as 'input'.
- *
- */
-
     if (size <= 0)
         size = (int) ceil(6 * sigma + 1);
     if (size % 2 == 0)
