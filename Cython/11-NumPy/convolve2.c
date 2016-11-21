@@ -884,12 +884,12 @@ typedef npy_double __pyx_t_5numpy_double_t;
  */
 typedef npy_longdouble __pyx_t_5numpy_longdouble_t;
 
-/* "convolve2.pyx":17
+/* "convolve2.pyx":19
  * # every type in the numpy module there's a corresponding compile-time
  * # type with a _t-suffix.
  * ctypedef np.int_t DTYPE_t             # <<<<<<<<<<<<<<
+ * 
  * # "def" can type its arguments but not have a return type. The type of the
- * # arguments for a "def" function is checked at run-time when entering the
  */
 typedef __pyx_t_5numpy_int_t __pyx_t_9convolve2_DTYPE_t;
 /* Declarations.proto */
@@ -1108,9 +1108,6 @@ static CYTHON_INLINE long __Pyx_div_long(long, long);
 
 /* ExtTypeTest.proto */
 static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type);
-
-/* BufferIndexError.proto */
-static void __Pyx_RaiseBufferIndexError(int axis);
 
 #define __Pyx_BufPtrStrided2d(type, buf, i0, s0, i1, s1) (type)((char*)buf + i0 * s0 + i1 * s1)
 /* DictGetItem.proto */
@@ -1386,6 +1383,8 @@ static PyTypeObject *__pyx_ptype_5numpy_ndarray = 0;
 static PyTypeObject *__pyx_ptype_5numpy_ufunc = 0;
 static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *, char *, char *, int *); /*proto*/
 
+/* Module declarations from 'cython' */
+
 /* Module declarations from 'convolve2' */
 static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_9convolve2_DTYPE_t = { "DTYPE_t", NULL, sizeof(__pyx_t_9convolve2_DTYPE_t), { 0 }, 0, IS_UNSIGNED(__pyx_t_9convolve2_DTYPE_t) ? 'U' : 'I', IS_UNSIGNED(__pyx_t_9convolve2_DTYPE_t), 0 };
 #define __Pyx_MODULE_NAME "convolve2"
@@ -1506,12 +1505,12 @@ static PyObject *__pyx_tuple__10;
 static PyObject *__pyx_tuple__11;
 static PyObject *__pyx_codeobj__12;
 
-/* "convolve2.pyx":30
- * # the datatype (first argument) and number of dimensions (ndim keyword-only
- * # argument, if not provided then one-dimensional is assumed).
+/* "convolve2.pyx":40
+ * @cython.boundscheck(False)  # turn off bounds-checking for entire function
+ * @cython.wraparound(False)  # turn off negative index wrapping for entire function
  * def naive_convolve(np.ndarray[DTYPE_t, ndim=2] input, np.ndarray[DTYPE_t, ndim=2] kernel):             # <<<<<<<<<<<<<<
+ *     # def naive_convolve(object[DTYPE_t, ndim=2] input, object[DTYPE_t, ndim=2] kernel):
  *     """
- *     2D discrete convolution of an image with a filter kernel
  */
 
 /* Python wrapper */
@@ -1544,11 +1543,11 @@ static PyObject *__pyx_pw_9convolve2_1naive_convolve(PyObject *__pyx_self, PyObj
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_kernel)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("naive_convolve", 1, 2, 2, 1); __PYX_ERR(0, 30, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("naive_convolve", 1, 2, 2, 1); __PYX_ERR(0, 40, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "naive_convolve") < 0)) __PYX_ERR(0, 30, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "naive_convolve") < 0)) __PYX_ERR(0, 40, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -1561,14 +1560,14 @@ static PyObject *__pyx_pw_9convolve2_1naive_convolve(PyObject *__pyx_self, PyObj
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("naive_convolve", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 30, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("naive_convolve", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 40, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("convolve2.naive_convolve", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_input), __pyx_ptype_5numpy_ndarray, 1, "input", 0))) __PYX_ERR(0, 30, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_kernel), __pyx_ptype_5numpy_ndarray, 1, "kernel", 0))) __PYX_ERR(0, 30, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_input), __pyx_ptype_5numpy_ndarray, 1, "input", 0))) __PYX_ERR(0, 40, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_kernel), __pyx_ptype_5numpy_ndarray, 1, "kernel", 0))) __PYX_ERR(0, 40, __pyx_L1_error)
   __pyx_r = __pyx_pf_9convolve2_naive_convolve(__pyx_self, __pyx_v_input, __pyx_v_kernel);
 
   /* function exit code */
@@ -1625,9 +1624,8 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
   int __pyx_t_16;
   Py_ssize_t __pyx_t_17;
   Py_ssize_t __pyx_t_18;
-  int __pyx_t_19;
+  Py_ssize_t __pyx_t_19;
   Py_ssize_t __pyx_t_20;
-  Py_ssize_t __pyx_t_21;
   __Pyx_RefNannySetupContext("naive_convolve", 0);
   __pyx_pybuffer_input.pybuffer.buf = NULL;
   __pyx_pybuffer_input.refcount = 0;
@@ -1639,16 +1637,16 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
   __pyx_pybuffernd_kernel.rcbuffer = &__pyx_pybuffer_kernel;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_input.rcbuffer->pybuffer, (PyObject*)__pyx_v_input, &__Pyx_TypeInfo_nn___pyx_t_9convolve2_DTYPE_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 30, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_input.rcbuffer->pybuffer, (PyObject*)__pyx_v_input, &__Pyx_TypeInfo_nn___pyx_t_9convolve2_DTYPE_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 40, __pyx_L1_error)
   }
   __pyx_pybuffernd_input.diminfo[0].strides = __pyx_pybuffernd_input.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_input.diminfo[0].shape = __pyx_pybuffernd_input.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_input.diminfo[1].strides = __pyx_pybuffernd_input.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_input.diminfo[1].shape = __pyx_pybuffernd_input.rcbuffer->pybuffer.shape[1];
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_kernel.rcbuffer->pybuffer, (PyObject*)__pyx_v_kernel, &__Pyx_TypeInfo_nn___pyx_t_9convolve2_DTYPE_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 30, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_kernel.rcbuffer->pybuffer, (PyObject*)__pyx_v_kernel, &__Pyx_TypeInfo_nn___pyx_t_9convolve2_DTYPE_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 40, __pyx_L1_error)
   }
   __pyx_pybuffernd_kernel.diminfo[0].strides = __pyx_pybuffernd_kernel.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_kernel.diminfo[0].shape = __pyx_pybuffernd_kernel.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_kernel.diminfo[1].strides = __pyx_pybuffernd_kernel.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_kernel.diminfo[1].shape = __pyx_pybuffernd_kernel.rcbuffer->pybuffer.shape[1];
 
-  /* "convolve2.pyx":39
+  /* "convolve2.pyx":50
  * 
  *     """
  *     if kernel.shape[0] % 2 != 1 or kernel.shape[1] % 2 != 1:             # <<<<<<<<<<<<<<
@@ -1666,20 +1664,20 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "convolve2.pyx":40
+    /* "convolve2.pyx":51
  *     """
  *     if kernel.shape[0] % 2 != 1 or kernel.shape[1] % 2 != 1:
  *         raise ValueError("Only odd dimensions on filter supported")             # <<<<<<<<<<<<<<
  *     assert input.dtype == DTYPE and kernel.dtype == DTYPE
  * 
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 40, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 51, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 40, __pyx_L1_error)
+    __PYX_ERR(0, 51, __pyx_L1_error)
 
-    /* "convolve2.pyx":39
+    /* "convolve2.pyx":50
  * 
  *     """
  *     if kernel.shape[0] % 2 != 1 or kernel.shape[1] % 2 != 1:             # <<<<<<<<<<<<<<
@@ -1688,7 +1686,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   }
 
-  /* "convolve2.pyx":41
+  /* "convolve2.pyx":52
  *     if kernel.shape[0] % 2 != 1 or kernel.shape[1] % 2 != 1:
  *         raise ValueError("Only odd dimensions on filter supported")
  *     assert input.dtype == DTYPE and kernel.dtype == DTYPE             # <<<<<<<<<<<<<<
@@ -1697,39 +1695,39 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_input), __pyx_n_s_dtype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_input), __pyx_n_s_dtype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 52, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_DTYPE); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_DTYPE); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 52, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = PyObject_RichCompare(__pyx_t_3, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_5 = PyObject_RichCompare(__pyx_t_3, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 52, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 52, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     if (__pyx_t_2) {
     } else {
       __pyx_t_1 = __pyx_t_2;
       goto __pyx_L6_bool_binop_done;
     }
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_kernel), __pyx_n_s_dtype); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_kernel), __pyx_n_s_dtype); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 52, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_DTYPE); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_DTYPE); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 52, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = PyObject_RichCompare(__pyx_t_5, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_5, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 52, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 52, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_1 = __pyx_t_2;
     __pyx_L6_bool_binop_done:;
     if (unlikely(!__pyx_t_1)) {
       PyErr_SetNone(PyExc_AssertionError);
-      __PYX_ERR(0, 41, __pyx_L1_error)
+      __PYX_ERR(0, 52, __pyx_L1_error)
     }
   }
   #endif
 
-  /* "convolve2.pyx":52
+  /* "convolve2.pyx":63
  *     # Purists could use "Py_ssize_t" which is the proper Python type for
  *     # array indices.
  *     cdef int in_row_max = input.shape[0]             # <<<<<<<<<<<<<<
@@ -1738,7 +1736,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   __pyx_v_in_row_max = (__pyx_v_input->dimensions[0]);
 
-  /* "convolve2.pyx":53
+  /* "convolve2.pyx":64
  *     # array indices.
  *     cdef int in_row_max = input.shape[0]
  *     cdef int in_col_max = input.shape[1]             # <<<<<<<<<<<<<<
@@ -1747,7 +1745,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   __pyx_v_in_col_max = (__pyx_v_input->dimensions[1]);
 
-  /* "convolve2.pyx":54
+  /* "convolve2.pyx":65
  *     cdef int in_row_max = input.shape[0]
  *     cdef int in_col_max = input.shape[1]
  *     cdef int ker_row_max = kernel.shape[0]             # <<<<<<<<<<<<<<
@@ -1756,7 +1754,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   __pyx_v_ker_row_max = (__pyx_v_kernel->dimensions[0]);
 
-  /* "convolve2.pyx":55
+  /* "convolve2.pyx":66
  *     cdef int in_col_max = input.shape[1]
  *     cdef int ker_row_max = kernel.shape[0]
  *     cdef int ker_col_max = kernel.shape[1]             # <<<<<<<<<<<<<<
@@ -1765,7 +1763,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   __pyx_v_ker_col_max = (__pyx_v_kernel->dimensions[1]);
 
-  /* "convolve2.pyx":56
+  /* "convolve2.pyx":67
  *     cdef int ker_row_max = kernel.shape[0]
  *     cdef int ker_col_max = kernel.shape[1]
  *     cdef int ker_row_mid = ker_row_max // 2             # <<<<<<<<<<<<<<
@@ -1774,7 +1772,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   __pyx_v_ker_row_mid = __Pyx_div_long(__pyx_v_ker_row_max, 2);
 
-  /* "convolve2.pyx":57
+  /* "convolve2.pyx":68
  *     cdef int ker_col_max = kernel.shape[1]
  *     cdef int ker_row_mid = ker_row_max // 2
  *     cdef int ker_col_mid = ker_col_max // 2             # <<<<<<<<<<<<<<
@@ -1783,7 +1781,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   __pyx_v_ker_col_mid = __Pyx_div_long(__pyx_v_ker_col_max, 2);
 
-  /* "convolve2.pyx":58
+  /* "convolve2.pyx":69
  *     cdef int ker_row_mid = ker_row_max // 2
  *     cdef int ker_col_mid = ker_col_max // 2
  *     cdef int out_row_max = in_row_max + 2 * ker_row_mid             # <<<<<<<<<<<<<<
@@ -1792,7 +1790,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   __pyx_v_out_row_max = (__pyx_v_in_row_max + (2 * __pyx_v_ker_row_mid));
 
-  /* "convolve2.pyx":59
+  /* "convolve2.pyx":70
  *     cdef int ker_col_mid = ker_col_max // 2
  *     cdef int out_row_max = in_row_max + 2 * ker_row_mid
  *     cdef int out_col_max = in_col_max + 2 * ker_col_mid             # <<<<<<<<<<<<<<
@@ -1801,23 +1799,23 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
   __pyx_v_out_col_max = (__pyx_v_in_col_max + (2 * __pyx_v_ker_col_mid));
 
-  /* "convolve2.pyx":61
+  /* "convolve2.pyx":72
  *     cdef int out_col_max = in_col_max + 2 * ker_col_mid
  * 
  *     cdef np.ndarray output = np.zeros([out_row_max, out_col_max], dtype=input.dtype)             # <<<<<<<<<<<<<<
+ *     # cdef object output = np.zeros([out_row_max, out_col_max], dtype=input.dtype)
  * 
- *     cdef int out_row, out_col, s, t, in_row, in_col
  */
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_out_row_max); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_out_row_max); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_out_col_max); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_out_col_max); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = PyList_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_6 = PyList_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_GIVEREF(__pyx_t_3);
   PyList_SET_ITEM(__pyx_t_6, 0, __pyx_t_3);
@@ -1825,27 +1823,27 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
   PyList_SET_ITEM(__pyx_t_6, 1, __pyx_t_5);
   __pyx_t_3 = 0;
   __pyx_t_5 = 0;
-  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_6);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_6);
   __pyx_t_6 = 0;
-  __pyx_t_6 = PyDict_New(); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_6 = PyDict_New(); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_input), __pyx_n_s_dtype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_input), __pyx_n_s_dtype); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_3) < 0) __PYX_ERR(0, 61, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_3) < 0) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 61, __pyx_L1_error)
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 72, __pyx_L1_error)
   __pyx_v_output = ((PyArrayObject *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "convolve2.pyx":77
+  /* "convolve2.pyx":89
  *     cdef DTYPE_t value
  * 
  *     for out_row in range(out_row_max):             # <<<<<<<<<<<<<<
@@ -1856,7 +1854,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_out_row = __pyx_t_8;
 
-    /* "convolve2.pyx":78
+    /* "convolve2.pyx":90
  * 
  *     for out_row in range(out_row_max):
  *         for out_col in range(out_col_max):             # <<<<<<<<<<<<<<
@@ -1867,7 +1865,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
     for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
       __pyx_v_out_col = __pyx_t_10;
 
-      /* "convolve2.pyx":79
+      /* "convolve2.pyx":91
  *     for out_row in range(out_row_max):
  *         for out_col in range(out_col_max):
  *             value = 0             # <<<<<<<<<<<<<<
@@ -1876,7 +1874,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
       __pyx_v_value = 0;
 
-      /* "convolve2.pyx":80
+      /* "convolve2.pyx":92
  *         for out_col in range(out_col_max):
  *             value = 0
  *             s_from = max(-ker_row_mid, ker_row_mid - out_row)             # <<<<<<<<<<<<<<
@@ -1892,7 +1890,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
       }
       __pyx_v_s_from = __pyx_t_13;
 
-      /* "convolve2.pyx":81
+      /* "convolve2.pyx":93
  *             value = 0
  *             s_from = max(-ker_row_mid, ker_row_mid - out_row)
  *             s_to = min(ker_row_mid, (out_row_max - 1) - out_row - ker_row_mid) + 1             # <<<<<<<<<<<<<<
@@ -1908,7 +1906,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
       }
       __pyx_v_s_to = (__pyx_t_15 + 1);
 
-      /* "convolve2.pyx":82
+      /* "convolve2.pyx":94
  *             s_from = max(-ker_row_mid, ker_row_mid - out_row)
  *             s_to = min(ker_row_mid, (out_row_max - 1) - out_row - ker_row_mid) + 1
  *             t_from = max(-ker_col_mid, ker_col_mid - out_col)             # <<<<<<<<<<<<<<
@@ -1924,7 +1922,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
       }
       __pyx_v_t_from = __pyx_t_12;
 
-      /* "convolve2.pyx":83
+      /* "convolve2.pyx":95
  *             s_to = min(ker_row_mid, (out_row_max - 1) - out_row - ker_row_mid) + 1
  *             t_from = max(-ker_col_mid, ker_col_mid - out_col)
  *             t_to = min(ker_col_mid, (out_col_max - 1) - out_col - ker_col_mid) + 1             # <<<<<<<<<<<<<<
@@ -1940,7 +1938,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
       }
       __pyx_v_t_to = (__pyx_t_14 + 1);
 
-      /* "convolve2.pyx":88
+      /* "convolve2.pyx":100
  *             # and the t-axis points in the direction that index of columns increases
  *             # the origin is at the center of the (reflected) kernel
  *             for s in range(s_from, s_to):             # <<<<<<<<<<<<<<
@@ -1951,7 +1949,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
       for (__pyx_t_13 = __pyx_v_s_from; __pyx_t_13 < __pyx_t_12; __pyx_t_13+=1) {
         __pyx_v_s = __pyx_t_13;
 
-        /* "convolve2.pyx":89
+        /* "convolve2.pyx":101
  *             # the origin is at the center of the (reflected) kernel
  *             for s in range(s_from, s_to):
  *                 for t in range(t_from, t_to):             # <<<<<<<<<<<<<<
@@ -1962,7 +1960,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
         for (__pyx_t_16 = __pyx_v_t_from; __pyx_t_16 < __pyx_t_11; __pyx_t_16+=1) {
           __pyx_v_t = __pyx_t_16;
 
-          /* "convolve2.pyx":90
+          /* "convolve2.pyx":102
  *             for s in range(s_from, s_to):
  *                 for t in range(t_from, t_to):
  *                     in_row = out_row - ker_row_mid + s             # <<<<<<<<<<<<<<
@@ -1971,7 +1969,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
           __pyx_v_in_row = ((__pyx_v_out_row - __pyx_v_ker_row_mid) + __pyx_v_s);
 
-          /* "convolve2.pyx":91
+          /* "convolve2.pyx":103
  *                 for t in range(t_from, t_to):
  *                     in_row = out_row - ker_row_mid + s
  *                     in_col = out_col - ker_col_mid + t             # <<<<<<<<<<<<<<
@@ -1980,7 +1978,7 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
           __pyx_v_in_col = ((__pyx_v_out_col - __pyx_v_ker_col_mid) + __pyx_v_t);
 
-          /* "convolve2.pyx":92
+          /* "convolve2.pyx":104
  *                     in_row = out_row - ker_row_mid + s
  *                     in_col = out_col - ker_col_mid + t
  *                     value += input[in_row, in_col] \             # <<<<<<<<<<<<<<
@@ -1989,68 +1987,42 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
  */
           __pyx_t_17 = __pyx_v_in_row;
           __pyx_t_18 = __pyx_v_in_col;
-          __pyx_t_19 = -1;
-          if (__pyx_t_17 < 0) {
-            __pyx_t_17 += __pyx_pybuffernd_input.diminfo[0].shape;
-            if (unlikely(__pyx_t_17 < 0)) __pyx_t_19 = 0;
-          } else if (unlikely(__pyx_t_17 >= __pyx_pybuffernd_input.diminfo[0].shape)) __pyx_t_19 = 0;
-          if (__pyx_t_18 < 0) {
-            __pyx_t_18 += __pyx_pybuffernd_input.diminfo[1].shape;
-            if (unlikely(__pyx_t_18 < 0)) __pyx_t_19 = 1;
-          } else if (unlikely(__pyx_t_18 >= __pyx_pybuffernd_input.diminfo[1].shape)) __pyx_t_19 = 1;
-          if (unlikely(__pyx_t_19 != -1)) {
-            __Pyx_RaiseBufferIndexError(__pyx_t_19);
-            __PYX_ERR(0, 92, __pyx_L1_error)
-          }
 
-          /* "convolve2.pyx":93
+          /* "convolve2.pyx":105
  *                     in_col = out_col - ker_col_mid + t
  *                     value += input[in_row, in_col] \
  *                              * kernel[ker_row_mid - s, ker_col_mid - t]             # <<<<<<<<<<<<<<
  *             output[out_row, out_col] = value
  * 
  */
-          __pyx_t_20 = (__pyx_v_ker_row_mid - __pyx_v_s);
-          __pyx_t_21 = (__pyx_v_ker_col_mid - __pyx_v_t);
-          __pyx_t_19 = -1;
-          if (__pyx_t_20 < 0) {
-            __pyx_t_20 += __pyx_pybuffernd_kernel.diminfo[0].shape;
-            if (unlikely(__pyx_t_20 < 0)) __pyx_t_19 = 0;
-          } else if (unlikely(__pyx_t_20 >= __pyx_pybuffernd_kernel.diminfo[0].shape)) __pyx_t_19 = 0;
-          if (__pyx_t_21 < 0) {
-            __pyx_t_21 += __pyx_pybuffernd_kernel.diminfo[1].shape;
-            if (unlikely(__pyx_t_21 < 0)) __pyx_t_19 = 1;
-          } else if (unlikely(__pyx_t_21 >= __pyx_pybuffernd_kernel.diminfo[1].shape)) __pyx_t_19 = 1;
-          if (unlikely(__pyx_t_19 != -1)) {
-            __Pyx_RaiseBufferIndexError(__pyx_t_19);
-            __PYX_ERR(0, 93, __pyx_L1_error)
-          }
+          __pyx_t_19 = (__pyx_v_ker_row_mid - __pyx_v_s);
+          __pyx_t_20 = (__pyx_v_ker_col_mid - __pyx_v_t);
 
-          /* "convolve2.pyx":92
+          /* "convolve2.pyx":104
  *                     in_row = out_row - ker_row_mid + s
  *                     in_col = out_col - ker_col_mid + t
  *                     value += input[in_row, in_col] \             # <<<<<<<<<<<<<<
  *                              * kernel[ker_row_mid - s, ker_col_mid - t]
  *             output[out_row, out_col] = value
  */
-          __pyx_v_value = (__pyx_v_value + ((*__Pyx_BufPtrStrided2d(__pyx_t_9convolve2_DTYPE_t *, __pyx_pybuffernd_input.rcbuffer->pybuffer.buf, __pyx_t_17, __pyx_pybuffernd_input.diminfo[0].strides, __pyx_t_18, __pyx_pybuffernd_input.diminfo[1].strides)) * (*__Pyx_BufPtrStrided2d(__pyx_t_9convolve2_DTYPE_t *, __pyx_pybuffernd_kernel.rcbuffer->pybuffer.buf, __pyx_t_20, __pyx_pybuffernd_kernel.diminfo[0].strides, __pyx_t_21, __pyx_pybuffernd_kernel.diminfo[1].strides))));
+          __pyx_v_value = (__pyx_v_value + ((*__Pyx_BufPtrStrided2d(__pyx_t_9convolve2_DTYPE_t *, __pyx_pybuffernd_input.rcbuffer->pybuffer.buf, __pyx_t_17, __pyx_pybuffernd_input.diminfo[0].strides, __pyx_t_18, __pyx_pybuffernd_input.diminfo[1].strides)) * (*__Pyx_BufPtrStrided2d(__pyx_t_9convolve2_DTYPE_t *, __pyx_pybuffernd_kernel.rcbuffer->pybuffer.buf, __pyx_t_19, __pyx_pybuffernd_kernel.diminfo[0].strides, __pyx_t_20, __pyx_pybuffernd_kernel.diminfo[1].strides))));
         }
       }
 
-      /* "convolve2.pyx":94
+      /* "convolve2.pyx":106
  *                     value += input[in_row, in_col] \
  *                              * kernel[ker_row_mid - s, ker_col_mid - t]
  *             output[out_row, out_col] = value             # <<<<<<<<<<<<<<
  * 
  *     return output
  */
-      __pyx_t_3 = __Pyx_PyInt_From_npy_long(__pyx_v_value); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyInt_From_npy_long(__pyx_v_value); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 106, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_out_row); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_out_row); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 106, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_out_col); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_out_col); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 106, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 106, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_GIVEREF(__pyx_t_6);
       PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_6);
@@ -2058,13 +2030,13 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
       PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_5);
       __pyx_t_6 = 0;
       __pyx_t_5 = 0;
-      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_output), __pyx_t_4, __pyx_t_3) < 0)) __PYX_ERR(0, 94, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(((PyObject *)__pyx_v_output), __pyx_t_4, __pyx_t_3) < 0)) __PYX_ERR(0, 106, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     }
   }
 
-  /* "convolve2.pyx":96
+  /* "convolve2.pyx":108
  *             output[out_row, out_col] = value
  * 
  *     return output             # <<<<<<<<<<<<<<
@@ -2074,12 +2046,12 @@ static PyObject *__pyx_pf_9convolve2_naive_convolve(CYTHON_UNUSED PyObject *__py
   __pyx_r = ((PyObject *)__pyx_v_output);
   goto __pyx_L0;
 
-  /* "convolve2.pyx":30
- * # the datatype (first argument) and number of dimensions (ndim keyword-only
- * # argument, if not provided then one-dimensional is assumed).
+  /* "convolve2.pyx":40
+ * @cython.boundscheck(False)  # turn off bounds-checking for entire function
+ * @cython.wraparound(False)  # turn off negative index wrapping for entire function
  * def naive_convolve(np.ndarray[DTYPE_t, ndim=2] input, np.ndarray[DTYPE_t, ndim=2] kernel):             # <<<<<<<<<<<<<<
+ *     # def naive_convolve(object[DTYPE_t, ndim=2] input, object[DTYPE_t, ndim=2] kernel):
  *     """
- *     2D discrete convolution of an image with a filter kernel
  */
 
   /* function exit code */
@@ -4695,8 +4667,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 40, __pyx_L1_error)
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 77, __pyx_L1_error)
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 51, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 89, __pyx_L1_error)
   __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) __PYX_ERR(1, 799, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(1, 989, __pyx_L1_error)
   return 0;
@@ -4708,14 +4680,14 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "convolve2.pyx":40
+  /* "convolve2.pyx":51
  *     """
  *     if kernel.shape[0] % 2 != 1 or kernel.shape[1] % 2 != 1:
  *         raise ValueError("Only odd dimensions on filter supported")             # <<<<<<<<<<<<<<
  *     assert input.dtype == DTYPE and kernel.dtype == DTYPE
  * 
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_Only_odd_dimensions_on_filter_su); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 40, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_Only_odd_dimensions_on_filter_su); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
@@ -4816,17 +4788,17 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__10);
   __Pyx_GIVEREF(__pyx_tuple__10);
 
-  /* "convolve2.pyx":30
- * # the datatype (first argument) and number of dimensions (ndim keyword-only
- * # argument, if not provided then one-dimensional is assumed).
+  /* "convolve2.pyx":40
+ * @cython.boundscheck(False)  # turn off bounds-checking for entire function
+ * @cython.wraparound(False)  # turn off negative index wrapping for entire function
  * def naive_convolve(np.ndarray[DTYPE_t, ndim=2] input, np.ndarray[DTYPE_t, ndim=2] kernel):             # <<<<<<<<<<<<<<
+ *     # def naive_convolve(object[DTYPE_t, ndim=2] input, object[DTYPE_t, ndim=2] kernel):
  *     """
- *     2D discrete convolution of an image with a filter kernel
  */
-  __pyx_tuple__11 = PyTuple_Pack(22, __pyx_n_s_input, __pyx_n_s_kernel, __pyx_n_s_in_row_max, __pyx_n_s_in_col_max, __pyx_n_s_ker_row_max, __pyx_n_s_ker_col_max, __pyx_n_s_ker_row_mid, __pyx_n_s_ker_col_mid, __pyx_n_s_out_row_max, __pyx_n_s_out_col_max, __pyx_n_s_output, __pyx_n_s_out_row, __pyx_n_s_out_col, __pyx_n_s_s, __pyx_n_s_t, __pyx_n_s_in_row, __pyx_n_s_in_col, __pyx_n_s_s_from, __pyx_n_s_s_to, __pyx_n_s_t_from, __pyx_n_s_t_to, __pyx_n_s_value); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_tuple__11 = PyTuple_Pack(22, __pyx_n_s_input, __pyx_n_s_kernel, __pyx_n_s_in_row_max, __pyx_n_s_in_col_max, __pyx_n_s_ker_row_max, __pyx_n_s_ker_col_max, __pyx_n_s_ker_row_mid, __pyx_n_s_ker_col_mid, __pyx_n_s_out_row_max, __pyx_n_s_out_col_max, __pyx_n_s_output, __pyx_n_s_out_row, __pyx_n_s_out_col, __pyx_n_s_s, __pyx_n_s_t, __pyx_n_s_in_row, __pyx_n_s_in_col, __pyx_n_s_s_from, __pyx_n_s_s_to, __pyx_n_s_t_from, __pyx_n_s_t_to, __pyx_n_s_value); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 40, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__11);
   __Pyx_GIVEREF(__pyx_tuple__11);
-  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(2, 0, 22, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_xiaojx_Documents_Files_VM, __pyx_n_s_naive_convolve, 30, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(2, 0, 22, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_xiaojx_Documents_Files_VM, __pyx_n_s_naive_convolve, 40, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 40, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -4950,39 +4922,39 @@ PyMODINIT_FUNC PyInit_convolve2(void)
  * 
  * from __future__ import division
  * import numpy as np             # <<<<<<<<<<<<<<
+ * 
  * # "cimport" is used to import special compile-time information
- * # about the numpy module (this is stored in a file numpy.pxd which is
  */
   __pyx_t_1 = __Pyx_Import(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "convolve2.pyx":13
+  /* "convolve2.pyx":14
  * # DTYPE for this, which is assigned to the usual NumPy runtime
  * # type int object.
  * DTYPE = np.int             # <<<<<<<<<<<<<<
+ * 
  * # "ctypedef" assigns a corresponding compile-time type to DTYPE_t. For
- * # every type in the numpy module there's a corresponding compile-time
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_DTYPE, __pyx_t_2) < 0) __PYX_ERR(0, 13, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_DTYPE, __pyx_t_2) < 0) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "convolve2.pyx":30
- * # the datatype (first argument) and number of dimensions (ndim keyword-only
- * # argument, if not provided then one-dimensional is assumed).
+  /* "convolve2.pyx":40
+ * @cython.boundscheck(False)  # turn off bounds-checking for entire function
+ * @cython.wraparound(False)  # turn off negative index wrapping for entire function
  * def naive_convolve(np.ndarray[DTYPE_t, ndim=2] input, np.ndarray[DTYPE_t, ndim=2] kernel):             # <<<<<<<<<<<<<<
+ *     # def naive_convolve(object[DTYPE_t, ndim=2] input, object[DTYPE_t, ndim=2] kernel):
  *     """
- *     2D discrete convolution of an image with a filter kernel
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9convolve2_1naive_convolve, NULL, __pyx_n_s_convolve2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9convolve2_1naive_convolve, NULL, __pyx_n_s_convolve2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 40, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_naive_convolve, __pyx_t_2) < 0) __PYX_ERR(0, 30, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_naive_convolve, __pyx_t_2) < 0) __PYX_ERR(0, 40, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "convolve2.pyx":1
@@ -6028,12 +6000,6 @@ bad:
     PyErr_Format(PyExc_TypeError, "Cannot convert %.200s to %.200s",
                  Py_TYPE(obj)->tp_name, type->tp_name);
     return 0;
-}
-
-/* BufferIndexError */
-      static void __Pyx_RaiseBufferIndexError(int axis) {
-  PyErr_Format(PyExc_IndexError,
-     "Out of bounds on buffer access (axis %d)", axis);
 }
 
 /* RaiseTooManyValuesToUnpack */

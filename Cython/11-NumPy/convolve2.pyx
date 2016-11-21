@@ -2,6 +2,7 @@
 
 from __future__ import division
 import numpy as np
+
 # "cimport" is used to import special compile-time information
 # about the numpy module (this is stored in a file numpy.pxd which is
 # currently part of the Cython distribution).
@@ -11,10 +12,12 @@ cimport numpy as np
 # DTYPE for this, which is assigned to the usual NumPy runtime
 # type int object.
 DTYPE = np.int
+
 # "ctypedef" assigns a corresponding compile-time type to DTYPE_t. For
 # every type in the numpy module there's a corresponding compile-time
 # type with a _t-suffix.
 ctypedef np.int_t DTYPE_t
+
 # "def" can type its arguments but not have a return type. The type of the
 # arguments for a "def" function is checked at run-time when entering the
 # function.
@@ -27,7 +30,15 @@ ctypedef np.int_t DTYPE_t
 # To speed up indexing, we can use "Buffer" syntax, which must be told
 # the datatype (first argument) and number of dimensions (“ndim” keyword-only
 # argument, if not provided then one-dimensional is assumed).
+#
+# To further accelerate, we can We can add a decorator to disable bounds checking
+# and negative indices checking. (Since the code is explicitly coded)
+cimport cython
+
+@cython.boundscheck(False)  # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 def naive_convolve(np.ndarray[DTYPE_t, ndim=2] input, np.ndarray[DTYPE_t, ndim=2] kernel):
+    # def naive_convolve(object[DTYPE_t, ndim=2] input, object[DTYPE_t, ndim=2] kernel):
     """
     2D discrete convolution of an image with a filter kernel
     :param input: an image indexed by (in_row, in_col)
@@ -59,6 +70,7 @@ def naive_convolve(np.ndarray[DTYPE_t, ndim=2] input, np.ndarray[DTYPE_t, ndim=2
     cdef int out_col_max = in_col_max + 2 * ker_col_mid
 
     cdef np.ndarray output = np.zeros([out_row_max, out_col_max], dtype=input.dtype)
+    # cdef object output = np.zeros([out_row_max, out_col_max], dtype=input.dtype)
 
     cdef int out_row, out_col, s, t, in_row, in_col
 
