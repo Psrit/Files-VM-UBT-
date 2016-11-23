@@ -7,7 +7,8 @@ def py_fact(n):
         return 1
     return n * py_fact(n - 1)
 
-# statically typing typed_fact's argument dose not improve performance over py_fact
+# in this case statically typing typed_fact's argument dose not improve
+# performance over py_fact
 def typed_fact(long n):
     """Computes n!"""
     if n <= 1:
@@ -31,7 +32,7 @@ def wrap_c_fact(n):
     return c_fact(n)
 
 # same as c_fact, but wrapper is generated automatically.
-# but not all C types can be used as the argument types or return type of cpdef functions.
+# note that not all C types can be used as the argument types or return type of cpdef functions.
 cpdef long cp_fact(long n):
     """Computes n!"""
     if n <= 1:
