@@ -1,8 +1,12 @@
 cdef class Particle:
     """Simple Particle extension type. """
+    # Available in Python-space:
     cdef public double mass
+    # Read-only in Python-space:
     cdef readonly double position
-    cdef double velocity  # private
+    # Attributes in cdef classes are by default private to
+    # Python codes; only accessible from Cython (typed access):
+    cdef double velocity
 
     cpdef double get_momentum(self):
         return self.mass * self.velocity
@@ -11,6 +15,7 @@ cdef class Particle:
     def get_momentum_py(self):
         return self.mass * self.velocity
 
+    # Available in Python-space:
     property momentum:
         """The momentum Particle property. """
         def __get__(self):
