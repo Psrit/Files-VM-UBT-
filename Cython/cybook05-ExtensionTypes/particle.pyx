@@ -8,6 +8,17 @@ cdef class Particle:
         return self.mass * self.velocity
     cdef double get_momentum_c(self):  # a little bit faster
         return self.mass * self.velocity
+    def get_momentum_py(self):
+        return self.mass * self.velocity
+
+    property momentum:
+        """The momentum Particle property. """
+        def __get__(self):
+            """momentum's getter"""
+            return self.mass * self.velocity
+        def __set__(self, m):
+            """momentum's setter"""
+            self.velocity = m / self.mass
 
 def add_momentums(particles):
     """Returns the sum of the particle momentums. """
