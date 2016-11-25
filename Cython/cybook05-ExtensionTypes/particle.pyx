@@ -1,5 +1,5 @@
 cdef class Particle:
-    """Simple Particle extension type. """
+    """ Simple Particle extension type. """
     # Available in Python-space:
     cdef public double mass
     # Read-only in Python-space:
@@ -26,7 +26,7 @@ cdef class Particle:
             self.velocity = m / self.mass
 
 def add_momentums(particles):
-    """Returns the sum of the particle momentums. """
+    """ Returns the sum of the particle momentums. """
     total_mmt = 0.0
     for particle in particles:
         # here the call to get_momentum is a fully general Python attribute
@@ -34,7 +34,7 @@ def add_momentums(particles):
         total_mmt += particle.get_momentum()
 
 def add_momentums_typed(list particles):
-    """Returns the sum of the particle momentums. """
+    """ Returns the sum of the particle momentums. """
     cdef:
         double total_mmt = 0.0
         Particle particle  # crucial
@@ -43,7 +43,7 @@ def add_momentums_typed(list particles):
     return total_mmt
 
 def add_momentums_typed_c(list particles):
-    """Returns the sum of the particle momentums. """
+    """ Returns the sum of the particle momentums. """
     cdef:
         double total_mmt = 0.0
         Particle particle

@@ -10,7 +10,7 @@ cdef class Matrix:
         self._matrix = <double*> malloc(nr * nc * sizeof(double))
         if self._matrix == NULL:
             raise MemoryError()
-    # the __del__ special method is supported by extension types;
+    # the __del__ special method is not supported by extension types;
     # __dealloc__ takes the role (C-level finalization).
     def __dealloc__(self):
         if self._matrix != NULL:
