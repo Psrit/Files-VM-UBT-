@@ -1,4 +1,4 @@
-import pyximport; pyximport.install()
+# import pyximport; pyximport.install()
 
 import os
 from PIL import Image

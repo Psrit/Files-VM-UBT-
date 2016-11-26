@@ -1,10 +1,10 @@
 # cython: profile=False
 cimport cython
 import numpy as np
-cimport numpy as np
+# cimport numpy as np  # move to .pxd
 
 DTYPE = np.float32
-ctypedef np.float32_t DTYPE_t
+# ctypedef np.float32_t DTYPE_t  # move to .pxd
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -17,11 +17,11 @@ cpdef gaussian_blur(DTYPE_t[:, ::1] input, double sigma=1.6, int size=-1):
         Data type of input should be DTYPE (=np.float32,?). `~PIL.Image.Image`
         objects are supposed to be converted to array before sent to this
         function.
-    :param sigma: scalar (sequence of scalars are not supported yet)
+    :param sigma: double (sequence of scalars are not supported yet; default=1.6)
         Standard deviation for Gaussian kernel.
         According to Lowe in his famous SIFT paper, sigma is set to be 1.6
         (default here).
-    :param size: scalar (sequence of scalars are not supported yet)
+    :param size: integer (sequence of scalars are not supported yet; default=-1)
         Size of the Gaussian kernel.
         If being negative or zero, size will be 'around' (6*sigma+1).
         `size` should be odd. If not, it will be increased by 1.
