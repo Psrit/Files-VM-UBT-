@@ -60,6 +60,8 @@ def naive_convolve(np.ndarray[DTYPE_t, ndim=2] input, np.ndarray[DTYPE_t, ndim=2
     # other C types (like "unsigned int") could have been used instead.
     # Purists could use "Py_ssize_t" which is the proper Python type for
     # array indices.
+	#
+    # NOTE: in_row_max, in_col_max = input.shape is WRONG
     cdef int in_row_max = input.shape[0]
     cdef int in_col_max = input.shape[1]
     cdef int ker_row_max = kernel.shape[0]
@@ -69,6 +71,7 @@ def naive_convolve(np.ndarray[DTYPE_t, ndim=2] input, np.ndarray[DTYPE_t, ndim=2
     cdef int out_row_max = in_row_max + 2 * ker_row_mid
     cdef int out_col_max = in_col_max + 2 * ker_col_mid
 
+    # NOTE: ... = np.zeros(input.shape) is WRONG
     cdef np.ndarray output = np.zeros([out_row_max, out_col_max], dtype=input.dtype)
     # cdef object output = np.zeros([out_row_max, out_col_max], dtype=input.dtype)
 

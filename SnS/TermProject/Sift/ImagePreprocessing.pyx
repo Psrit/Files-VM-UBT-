@@ -1,8 +1,14 @@
-# cython: profile=True
-# import math
-import numpy
+# cython: profile=False
+cimport cython
+import numpy as np
+cimport numpy as np
 
-def gaussian_blur(input, double sigma=1.6, int size=-1):
+DTYPE = np.float32
+ctypedef np.float32_t DTYPE_t
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef gaussian_blur(DTYPE_t[:, ::1] input, double sigma=1.6, int size=-1):
     """
     Gaussian blurring using 2-dimensional square Gaussian kernel.
 
@@ -21,23 +27,31 @@ def gaussian_blur(input, double sigma=1.6, int size=-1):
     """
 
     cdef:
-        int row, col, index, imrows, imcols
-
-    input = numpy.asanyarray(input)
+        int row, col, index
+        # NOTE: imrows, imcols = input.shape is WRONG
+        int imrows = input.shape[0]
+        int imcols = input.shape[1]
+        DTYPE_t[::1] gaussian_array1d
+        # NOTE: ... = np.zeros(input.shape) is WRONG
+        DTYPE_t[:, ::1] im_conv = np.zeros([imrows, imcols], dtype=DTYPE)
+        DTYPE_t[:, ::1] im_blurred = np.zeros([imrows, imcols], dtype=DTYPE)
 
     if size <= 0:
-        size = <int>numpy.ceil(6 * sigma + 1)
+        size = <int>np.ceil(6 * sigma + 1)
     if size % 2 == 0:
         size += 1
-    gaussian_array1d = numpy.arange(-(size - 1) / 2, (size - 1) / 2 + 1)
-    gaussian_array1d = numpy.exp(-(gaussian_array1d ** 2) / (2 * (sigma ** 2))) / \
-                       (numpy.sqrt(2 * numpy.pi) * sigma)
-    gaussian_array1d /= sum(gaussian_array1d)
+    gaussian_array1d = np.arange(-(size - 1) / 2.0, (size - 1) / 2.0 + 1, dtype=DTYPE)
+    cdef:
+        DTYPE_t sum = 0
+    for index in range(0, size):
+        gaussian_array1d[index] \
+            = np.exp(-gaussian_array1d[index] ** 2 /
+                     (2 * (sigma ** 2))) / (np.sqrt(2 * np.pi) * sigma)
+        sum += gaussian_array1d[index]
+    for index in range(0, size):
+        gaussian_array1d[index] /= sum
 
-    im_conv = numpy.zeros(input.shape)
-    im_blurred = numpy.zeros(input.shape)
-    imrows, imcols = input.shape
-    print "image size: ", input.shape
+
 
     for row in range(0, imrows):
         for col in range(0, imcols):

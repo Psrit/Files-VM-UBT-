@@ -1,1 +1,1 @@
-__all__ = ["ImPreprocessing"]
+__all__ = ["ImagePreprocessing"]

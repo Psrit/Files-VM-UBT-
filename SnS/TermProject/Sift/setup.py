@@ -3,13 +3,13 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 
 ext_modules = [
-    Extension("ImPreprocessing",
-              sources=["ImPreprocessing.pyx"],
+    Extension("ImagePreprocessing",
+              sources=["ImagePreprocessing.pyx"],
               libraries=["m"]  # Unix-like specific for libc math library
               )
 ]
 
 setup(
-    name="ImPreprocessing",
+    name="Sift",
     ext_modules=cythonize(ext_modules),
 )
