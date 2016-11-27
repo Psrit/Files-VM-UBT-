@@ -950,7 +950,7 @@ typedef npy_longdouble __pyx_t_5numpy_longdouble_t;
  * cimport numpy as np
  * ctypedef np.float32_t DTYPE_t             # <<<<<<<<<<<<<<
  * 
- * cpdef gaussian_blur(DTYPE_t[:, ::1] input, double sigma=*, int size=*)
+ * cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, double sigma=*, int size=*)
  */
 typedef __pyx_t_5numpy_float32_t __pyx_t_4Sift_18ImagePreprocessing_DTYPE_t;
 /* Declarations.proto */
@@ -1020,16 +1020,28 @@ typedef npy_clongdouble __pyx_t_5numpy_clongdouble_t;
  */
 typedef npy_cdouble __pyx_t_5numpy_complex_t;
 struct __pyx_opt_args_4Sift_18ImagePreprocessing_gaussian_blur;
+struct __pyx_opt_args_4Sift_18ImagePreprocessing_decimation;
 
 /* "Sift/ImagePreprocessing.pxd":4
  * ctypedef np.float32_t DTYPE_t
  * 
- * cpdef gaussian_blur(DTYPE_t[:, ::1] input, double sigma=*, int size=*)             # <<<<<<<<<<<<<<
+ * cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, double sigma=*, int size=*)             # <<<<<<<<<<<<<<
+ * cpdef DTYPE_t[:, ::1] decimation(DTYPE_t[:, ::1] input, int interval=*)
  */
 struct __pyx_opt_args_4Sift_18ImagePreprocessing_gaussian_blur {
   int __pyx_n;
   double sigma;
   int size;
+};
+
+/* "Sift/ImagePreprocessing.pxd":5
+ * 
+ * cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, double sigma=*, int size=*)
+ * cpdef DTYPE_t[:, ::1] decimation(DTYPE_t[:, ::1] input, int interval=*)             # <<<<<<<<<<<<<<
+ */
+struct __pyx_opt_args_4Sift_18ImagePreprocessing_decimation {
+  int __pyx_n;
+  int interval;
 };
 
 /* "View.MemoryView":103
@@ -1332,6 +1344,10 @@ static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
 /* None.proto */
 static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname);
 
+/* UnaryNegOverflows.proto */
+#define UNARY_NEG_WOULD_OVERFLOW(x)\
+        (((x) < 0) & ((unsigned long)(x) == 0-(unsigned long)(x)))
+
 /* PyThreadStateGet.proto */
 #if CYTHON_FAST_THREAD_STATE
 #define __Pyx_PyThreadState_declare  PyThreadState *__pyx_tstate;
@@ -1441,10 +1457,6 @@ static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int 
 
 /* None.proto */
 static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t, Py_ssize_t);
-
-/* UnaryNegOverflows.proto */
-#define UNARY_NEG_WOULD_OVERFLOW(x)\
-        (((x) < 0) & ((unsigned long)(x) == 0-(unsigned long)(x)))
 
 static CYTHON_UNUSED int __pyx_array_getbuffer(PyObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /*proto*/
 static PyObject *__pyx_array_get_memview(struct __pyx_array_obj *); /*proto*/
@@ -1844,7 +1856,8 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static PyObject *__pyx_f_4Sift_18ImagePreprocessing_gaussian_blur(__Pyx_memviewslice, int __pyx_skip_dispatch, struct __pyx_opt_args_4Sift_18ImagePreprocessing_gaussian_blur *__pyx_optional_args); /*proto*/
+static __Pyx_memviewslice __pyx_f_4Sift_18ImagePreprocessing_gaussian_blur(__Pyx_memviewslice, int __pyx_skip_dispatch, struct __pyx_opt_args_4Sift_18ImagePreprocessing_gaussian_blur *__pyx_optional_args); /*proto*/
+static __Pyx_memviewslice __pyx_f_4Sift_18ImagePreprocessing_decimation(__Pyx_memviewslice, int __pyx_skip_dispatch, struct __pyx_opt_args_4Sift_18ImagePreprocessing_decimation *__pyx_optional_args); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -1935,6 +1948,7 @@ static const char __pyx_k_float32[] = "float32";
 static const char __pyx_k_fortran[] = "fortran";
 static const char __pyx_k_memview[] = "memview";
 static const char __pyx_k_Ellipsis[] = "Ellipsis";
+static const char __pyx_k_interval[] = "interval";
 static const char __pyx_k_itemsize[] = "itemsize";
 static const char __pyx_k_TypeError[] = "TypeError";
 static const char __pyx_k_enumerate[] = "enumerate";
@@ -2023,6 +2037,7 @@ static PyObject *__pyx_kp_s_got_differing_extents_in_dimensi;
 static PyObject *__pyx_n_s_id;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_input;
+static PyObject *__pyx_n_s_interval;
 static PyObject *__pyx_n_s_itemsize;
 static PyObject *__pyx_kp_s_itemsize_0_for_cython_array;
 static PyObject *__pyx_n_s_main;
@@ -2061,6 +2076,7 @@ static PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_zeros;
 static PyObject *__pyx_pf_4Sift_18ImagePreprocessing_gaussian_blur(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_input, double __pyx_v_sigma, int __pyx_v_size); /* proto */
+static PyObject *__pyx_pf_4Sift_18ImagePreprocessing_2decimation(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_input, int __pyx_v_interval); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
@@ -2134,13 +2150,13 @@ static PyObject *__pyx_tuple__27;
 /* "Sift/ImagePreprocessing.pyx":11
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
- * cpdef gaussian_blur(DTYPE_t[:, ::1] input, double sigma=1.6, int size=-1):             # <<<<<<<<<<<<<<
+ * cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, double sigma=1.6, int size=-1):             # <<<<<<<<<<<<<<
  *     """
  *     Gaussian blurring using 2-dimensional square Gaussian kernel.
  */
 
 static PyObject *__pyx_pw_4Sift_18ImagePreprocessing_1gaussian_blur(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_4Sift_18ImagePreprocessing_gaussian_blur(__Pyx_memviewslice __pyx_v_input, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_4Sift_18ImagePreprocessing_gaussian_blur *__pyx_optional_args) {
+static __Pyx_memviewslice __pyx_f_4Sift_18ImagePreprocessing_gaussian_blur(__Pyx_memviewslice __pyx_v_input, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_4Sift_18ImagePreprocessing_gaussian_blur *__pyx_optional_args) {
   double __pyx_v_sigma = ((double)1.6);
   int __pyx_v_size = ((int)-1);
   int __pyx_v_row;
@@ -2152,7 +2168,7 @@ static PyObject *__pyx_f_4Sift_18ImagePreprocessing_gaussian_blur(__Pyx_memviews
   __Pyx_memviewslice __pyx_v_im_conv = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_im_blurred = { 0, 0, { 0 }, { 0 }, { 0 } };
   __pyx_t_4Sift_18ImagePreprocessing_DTYPE_t __pyx_v_sum;
-  PyObject *__pyx_r = NULL;
+  __Pyx_memviewslice __pyx_r = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
@@ -2853,18 +2869,17 @@ static PyObject *__pyx_f_4Sift_18ImagePreprocessing_gaussian_blur(__Pyx_memviews
  *                     += im_conv[index, col] * gaussian_array1d[index - row + (size - 1) / 2]
  * 
  *     return im_blurred             # <<<<<<<<<<<<<<
+ * 
+ * 
  */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_im_blurred, 2, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_4Sift_18ImagePreprocessing_DTYPE_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_4Sift_18ImagePreprocessing_DTYPE_t, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 74, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_r = __pyx_t_7;
-  __pyx_t_7 = 0;
+  __PYX_INC_MEMVIEW(&__pyx_v_im_blurred, 0);
+  __pyx_r = __pyx_v_im_blurred;
   goto __pyx_L0;
 
   /* "Sift/ImagePreprocessing.pyx":11
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
- * cpdef gaussian_blur(DTYPE_t[:, ::1] input, double sigma=1.6, int size=-1):             # <<<<<<<<<<<<<<
+ * cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, double sigma=1.6, int size=-1):             # <<<<<<<<<<<<<<
  *     """
  *     Gaussian blurring using 2-dimensional square Gaussian kernel.
  */
@@ -2879,13 +2894,19 @@ static PyObject *__pyx_f_4Sift_18ImagePreprocessing_gaussian_blur(__Pyx_memviews
   __Pyx_XDECREF(__pyx_t_7);
   __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
   __Pyx_XDECREF(__pyx_t_14);
+  __pyx_r.data = NULL;
+  __pyx_r.memview = NULL;
   __Pyx_AddTraceback("Sift.ImagePreprocessing.gaussian_blur", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = 0;
+
+  goto __pyx_L2;
   __pyx_L0:;
+  if (unlikely(!__pyx_r.memview)) {
+    PyErr_SetString(PyExc_TypeError, "Memoryview return value is not initialized");
+  }
+  __pyx_L2:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_gaussian_array1d, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_im_conv, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_im_blurred, 1);
-  __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -2971,24 +2992,428 @@ static PyObject *__pyx_pw_4Sift_18ImagePreprocessing_1gaussian_blur(PyObject *__
 static PyObject *__pyx_pf_4Sift_18ImagePreprocessing_gaussian_blur(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_input, double __pyx_v_sigma, int __pyx_v_size) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
+  __Pyx_memviewslice __pyx_t_1 = { 0, 0, { 0 }, { 0 }, { 0 } };
   struct __pyx_opt_args_4Sift_18ImagePreprocessing_gaussian_blur __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("gaussian_blur", 0);
   __Pyx_XDECREF(__pyx_r);
   if (unlikely(!__pyx_v_input.memview)) { __Pyx_RaiseUnboundLocalError("input"); __PYX_ERR(0, 11, __pyx_L1_error) }
   __pyx_t_2.__pyx_n = 2;
   __pyx_t_2.sigma = __pyx_v_sigma;
   __pyx_t_2.size = __pyx_v_size;
-  __pyx_t_1 = __pyx_f_4Sift_18ImagePreprocessing_gaussian_blur(__pyx_v_input, 0, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
+  __pyx_t_1 = __pyx_f_4Sift_18ImagePreprocessing_gaussian_blur(__pyx_v_input, 0, &__pyx_t_2); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_t_1, 2, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_4Sift_18ImagePreprocessing_DTYPE_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_4Sift_18ImagePreprocessing_DTYPE_t, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+  __pyx_t_1.memview = NULL;
+  __pyx_t_1.data = NULL;
+  __pyx_r = __pyx_t_3;
+  __pyx_t_3 = 0;
   goto __pyx_L0;
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+  __Pyx_XDECREF(__pyx_t_3);
   __Pyx_AddTraceback("Sift.ImagePreprocessing.gaussian_blur", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_input, 1);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "Sift/ImagePreprocessing.pyx":79
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cpdef DTYPE_t[:, ::1] decimation(DTYPE_t[:, ::1] input, int interval=2):             # <<<<<<<<<<<<<<
+ *     """
+ *     Downsampling the image by only keeping one pixel per (`interval`)**2 points.
+ */
+
+static PyObject *__pyx_pw_4Sift_18ImagePreprocessing_3decimation(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static __Pyx_memviewslice __pyx_f_4Sift_18ImagePreprocessing_decimation(__Pyx_memviewslice __pyx_v_input, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_4Sift_18ImagePreprocessing_decimation *__pyx_optional_args) {
+  int __pyx_v_interval = ((int)2);
+  int __pyx_v_row;
+  int __pyx_v_col;
+  int __pyx_v_out_row;
+  int __pyx_v_out_col;
+  int __pyx_v_in_nrows;
+  int __pyx_v_in_ncols;
+  int __pyx_v_out_nrows;
+  int __pyx_v_out_ncols;
+  __Pyx_memviewslice __pyx_v_output = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_r = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_RefNannyDeclarations
+  long __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  __Pyx_memviewslice __pyx_t_6 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_7;
+  Py_ssize_t __pyx_t_8;
+  Py_ssize_t __pyx_t_9;
+  Py_ssize_t __pyx_t_10;
+  Py_ssize_t __pyx_t_11;
+  __Pyx_RefNannySetupContext("decimation", 0);
+  if (__pyx_optional_args) {
+    if (__pyx_optional_args->__pyx_n > 0) {
+      __pyx_v_interval = __pyx_optional_args->interval;
+    }
+  }
+
+  /* "Sift/ImagePreprocessing.pyx":96
+ * 
+ *     """
+ *     assert interval >= 1             # <<<<<<<<<<<<<<
+ * 
+ *     cdef:
+ */
+  #ifndef CYTHON_WITHOUT_ASSERTIONS
+  if (unlikely(!Py_OptimizeFlag)) {
+    if (unlikely(!((__pyx_v_interval >= 1) != 0))) {
+      PyErr_SetNone(PyExc_AssertionError);
+      __PYX_ERR(0, 96, __pyx_L1_error)
+    }
+  }
+  #endif
+
+  /* "Sift/ImagePreprocessing.pyx":99
+ * 
+ *     cdef:
+ *         int row = 0, col = 0, out_row = 0, out_col = 0             # <<<<<<<<<<<<<<
+ *         int in_nrows = input.shape[0]
+ *         int in_ncols = input.shape[1]
+ */
+  __pyx_v_row = 0;
+  __pyx_v_col = 0;
+  __pyx_v_out_row = 0;
+  __pyx_v_out_col = 0;
+
+  /* "Sift/ImagePreprocessing.pyx":100
+ *     cdef:
+ *         int row = 0, col = 0, out_row = 0, out_col = 0
+ *         int in_nrows = input.shape[0]             # <<<<<<<<<<<<<<
+ *         int in_ncols = input.shape[1]
+ *         int out_nrows = (in_nrows + interval - 1) // interval
+ */
+  __pyx_v_in_nrows = (__pyx_v_input.shape[0]);
+
+  /* "Sift/ImagePreprocessing.pyx":101
+ *         int row = 0, col = 0, out_row = 0, out_col = 0
+ *         int in_nrows = input.shape[0]
+ *         int in_ncols = input.shape[1]             # <<<<<<<<<<<<<<
+ *         int out_nrows = (in_nrows + interval - 1) // interval
+ *         int out_ncols = (in_ncols + interval - 1) // interval
+ */
+  __pyx_v_in_ncols = (__pyx_v_input.shape[1]);
+
+  /* "Sift/ImagePreprocessing.pyx":102
+ *         int in_nrows = input.shape[0]
+ *         int in_ncols = input.shape[1]
+ *         int out_nrows = (in_nrows + interval - 1) // interval             # <<<<<<<<<<<<<<
+ *         int out_ncols = (in_ncols + interval - 1) // interval
+ *         DTYPE_t[:, ::1] output = np.zeros([out_nrows, out_ncols], dtype=DTYPE)
+ */
+  __pyx_t_1 = ((__pyx_v_in_nrows + __pyx_v_interval) - 1);
+  if (unlikely(__pyx_v_interval == 0)) {
+    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+    __PYX_ERR(0, 102, __pyx_L1_error)
+  }
+  else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_interval == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_1))) {
+    PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+    __PYX_ERR(0, 102, __pyx_L1_error)
+  }
+  __pyx_v_out_nrows = __Pyx_div_long(__pyx_t_1, __pyx_v_interval);
+
+  /* "Sift/ImagePreprocessing.pyx":103
+ *         int in_ncols = input.shape[1]
+ *         int out_nrows = (in_nrows + interval - 1) // interval
+ *         int out_ncols = (in_ncols + interval - 1) // interval             # <<<<<<<<<<<<<<
+ *         DTYPE_t[:, ::1] output = np.zeros([out_nrows, out_ncols], dtype=DTYPE)
+ * 
+ */
+  __pyx_t_1 = ((__pyx_v_in_ncols + __pyx_v_interval) - 1);
+  if (unlikely(__pyx_v_interval == 0)) {
+    PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
+    __PYX_ERR(0, 103, __pyx_L1_error)
+  }
+  else if (sizeof(long) == sizeof(long) && (!(((int)-1) > 0)) && unlikely(__pyx_v_interval == (int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_t_1))) {
+    PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
+    __PYX_ERR(0, 103, __pyx_L1_error)
+  }
+  __pyx_v_out_ncols = __Pyx_div_long(__pyx_t_1, __pyx_v_interval);
+
+  /* "Sift/ImagePreprocessing.pyx":104
+ *         int out_nrows = (in_nrows + interval - 1) // interval
+ *         int out_ncols = (in_ncols + interval - 1) // interval
+ *         DTYPE_t[:, ::1] output = np.zeros([out_nrows, out_ncols], dtype=DTYPE)             # <<<<<<<<<<<<<<
+ * 
+ *     while row < in_nrows:
+ */
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_out_nrows); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_out_ncols); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = PyList_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyList_SET_ITEM(__pyx_t_5, 0, __pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyList_SET_ITEM(__pyx_t_5, 1, __pyx_t_4);
+  __pyx_t_2 = 0;
+  __pyx_t_4 = 0;
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5);
+  __pyx_t_5 = 0;
+  __pyx_t_5 = PyDict_New(); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_DTYPE); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_2) < 0) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_d_dc_nn___pyx_t_4Sift_18ImagePreprocessing_DTYPE_t(__pyx_t_2);
+  if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_output = __pyx_t_6;
+  __pyx_t_6.memview = NULL;
+  __pyx_t_6.data = NULL;
+
+  /* "Sift/ImagePreprocessing.pyx":106
+ *         DTYPE_t[:, ::1] output = np.zeros([out_nrows, out_ncols], dtype=DTYPE)
+ * 
+ *     while row < in_nrows:             # <<<<<<<<<<<<<<
+ *         while col < in_ncols:
+ *             output[out_row, out_col] = input[row, col]
+ */
+  while (1) {
+    __pyx_t_7 = ((__pyx_v_row < __pyx_v_in_nrows) != 0);
+    if (!__pyx_t_7) break;
+
+    /* "Sift/ImagePreprocessing.pyx":107
+ * 
+ *     while row < in_nrows:
+ *         while col < in_ncols:             # <<<<<<<<<<<<<<
+ *             output[out_row, out_col] = input[row, col]
+ *             col += interval
+ */
+    while (1) {
+      __pyx_t_7 = ((__pyx_v_col < __pyx_v_in_ncols) != 0);
+      if (!__pyx_t_7) break;
+
+      /* "Sift/ImagePreprocessing.pyx":108
+ *     while row < in_nrows:
+ *         while col < in_ncols:
+ *             output[out_row, out_col] = input[row, col]             # <<<<<<<<<<<<<<
+ *             col += interval
+ *             out_col += 1
+ */
+      __pyx_t_8 = __pyx_v_row;
+      __pyx_t_9 = __pyx_v_col;
+      __pyx_t_10 = __pyx_v_out_row;
+      __pyx_t_11 = __pyx_v_out_col;
+      *((__pyx_t_4Sift_18ImagePreprocessing_DTYPE_t *) ( /* dim=1 */ ((char *) (((__pyx_t_4Sift_18ImagePreprocessing_DTYPE_t *) ( /* dim=0 */ (__pyx_v_output.data + __pyx_t_10 * __pyx_v_output.strides[0]) )) + __pyx_t_11)) )) = (*((__pyx_t_4Sift_18ImagePreprocessing_DTYPE_t *) ( /* dim=1 */ ((char *) (((__pyx_t_4Sift_18ImagePreprocessing_DTYPE_t *) ( /* dim=0 */ (__pyx_v_input.data + __pyx_t_8 * __pyx_v_input.strides[0]) )) + __pyx_t_9)) )));
+
+      /* "Sift/ImagePreprocessing.pyx":109
+ *         while col < in_ncols:
+ *             output[out_row, out_col] = input[row, col]
+ *             col += interval             # <<<<<<<<<<<<<<
+ *             out_col += 1
+ *         col = 0
+ */
+      __pyx_v_col = (__pyx_v_col + __pyx_v_interval);
+
+      /* "Sift/ImagePreprocessing.pyx":110
+ *             output[out_row, out_col] = input[row, col]
+ *             col += interval
+ *             out_col += 1             # <<<<<<<<<<<<<<
+ *         col = 0
+ *         out_col = 0
+ */
+      __pyx_v_out_col = (__pyx_v_out_col + 1);
+    }
+
+    /* "Sift/ImagePreprocessing.pyx":111
+ *             col += interval
+ *             out_col += 1
+ *         col = 0             # <<<<<<<<<<<<<<
+ *         out_col = 0
+ *         row += interval
+ */
+    __pyx_v_col = 0;
+
+    /* "Sift/ImagePreprocessing.pyx":112
+ *             out_col += 1
+ *         col = 0
+ *         out_col = 0             # <<<<<<<<<<<<<<
+ *         row += interval
+ *         out_row += 1
+ */
+    __pyx_v_out_col = 0;
+
+    /* "Sift/ImagePreprocessing.pyx":113
+ *         col = 0
+ *         out_col = 0
+ *         row += interval             # <<<<<<<<<<<<<<
+ *         out_row += 1
+ * 
+ */
+    __pyx_v_row = (__pyx_v_row + __pyx_v_interval);
+
+    /* "Sift/ImagePreprocessing.pyx":114
+ *         out_col = 0
+ *         row += interval
+ *         out_row += 1             # <<<<<<<<<<<<<<
+ * 
+ *     return output
+ */
+    __pyx_v_out_row = (__pyx_v_out_row + 1);
+  }
+
+  /* "Sift/ImagePreprocessing.pyx":116
+ *         out_row += 1
+ * 
+ *     return output             # <<<<<<<<<<<<<<
+ */
+  __PYX_INC_MEMVIEW(&__pyx_v_output, 0);
+  __pyx_r = __pyx_v_output;
+  goto __pyx_L0;
+
+  /* "Sift/ImagePreprocessing.pyx":79
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cpdef DTYPE_t[:, ::1] decimation(DTYPE_t[:, ::1] input, int interval=2):             # <<<<<<<<<<<<<<
+ *     """
+ *     Downsampling the image by only keeping one pixel per (`interval`)**2 points.
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_6, 1);
+  __pyx_r.data = NULL;
+  __pyx_r.memview = NULL;
+  __Pyx_AddTraceback("Sift.ImagePreprocessing.decimation", __pyx_clineno, __pyx_lineno, __pyx_filename);
+
+  goto __pyx_L2;
+  __pyx_L0:;
+  if (unlikely(!__pyx_r.memview)) {
+    PyErr_SetString(PyExc_TypeError, "Memoryview return value is not initialized");
+  }
+  __pyx_L2:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_output, 1);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_4Sift_18ImagePreprocessing_3decimation(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_4Sift_18ImagePreprocessing_2decimation[] = "\n    Downsampling the image by only keeping one pixel per (`interval`)**2 points.\n\n    :param input: ndarray or other 2-dimensional object having the buffer interface\n        Input image array.\n        Data type of input should be DTYPE (=np.float32,?). `~PIL.Image.Image`\n        objects are supposed to be converted to array before sent to this\n        function.\n    :param interval: integer (>=1; default=2)\n        For example, we keep input[0, 0], input[0, 2], input[0, 4],...\n        input[2, 0],... when interval == 1.\n    :return: memoryview of a 2-D array\n        Returned memoryview of the 2-D `DTYPE` array.\n        It has the same shape and the same data type (DTYPE) as `input`.\n\n    ";
+static PyObject *__pyx_pw_4Sift_18ImagePreprocessing_3decimation(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  __Pyx_memviewslice __pyx_v_input = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_v_interval;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("decimation (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_input,&__pyx_n_s_interval,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_input)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        case  1:
+        if (kw_args > 0) {
+          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_interval);
+          if (value) { values[1] = value; kw_args--; }
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "decimation") < 0)) __PYX_ERR(0, 79, __pyx_L3_error)
+      }
+    } else {
+      switch (PyTuple_GET_SIZE(__pyx_args)) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+    }
+    __pyx_v_input = __Pyx_PyObject_to_MemoryviewSlice_d_dc_nn___pyx_t_4Sift_18ImagePreprocessing_DTYPE_t(values[0]); if (unlikely(!__pyx_v_input.memview)) __PYX_ERR(0, 79, __pyx_L3_error)
+    if (values[1]) {
+      __pyx_v_interval = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_interval == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 79, __pyx_L3_error)
+    } else {
+      __pyx_v_interval = ((int)2);
+    }
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("decimation", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 79, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("Sift.ImagePreprocessing.decimation", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_4Sift_18ImagePreprocessing_2decimation(__pyx_self, __pyx_v_input, __pyx_v_interval);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_4Sift_18ImagePreprocessing_2decimation(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_input, int __pyx_v_interval) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_memviewslice __pyx_t_1 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  struct __pyx_opt_args_4Sift_18ImagePreprocessing_decimation __pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
+  __Pyx_RefNannySetupContext("decimation", 0);
+  __Pyx_XDECREF(__pyx_r);
+  if (unlikely(!__pyx_v_input.memview)) { __Pyx_RaiseUnboundLocalError("input"); __PYX_ERR(0, 79, __pyx_L1_error) }
+  __pyx_t_2.__pyx_n = 1;
+  __pyx_t_2.interval = __pyx_v_interval;
+  __pyx_t_1 = __pyx_f_4Sift_18ImagePreprocessing_decimation(__pyx_v_input, 0, &__pyx_t_2); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_t_1, 2, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_4Sift_18ImagePreprocessing_DTYPE_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_4Sift_18ImagePreprocessing_DTYPE_t, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+  __pyx_t_1.memview = NULL;
+  __pyx_t_1.data = NULL;
+  __pyx_r = __pyx_t_3;
+  __pyx_t_3 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("Sift.ImagePreprocessing.decimation", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_input, 1);
@@ -17832,6 +18257,7 @@ static PyTypeObject __pyx_type___pyx_memoryviewslice = {
 
 static PyMethodDef __pyx_methods[] = {
   {"gaussian_blur", (PyCFunction)__pyx_pw_4Sift_18ImagePreprocessing_1gaussian_blur, METH_VARARGS|METH_KEYWORDS, __pyx_doc_4Sift_18ImagePreprocessing_gaussian_blur},
+  {"decimation", (PyCFunction)__pyx_pw_4Sift_18ImagePreprocessing_3decimation, METH_VARARGS|METH_KEYWORDS, __pyx_doc_4Sift_18ImagePreprocessing_2decimation},
   {0, 0, 0, 0}
 };
 
@@ -17902,6 +18328,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_id, __pyx_k_id, sizeof(__pyx_k_id), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_input, __pyx_k_input, sizeof(__pyx_k_input), 0, 0, 1, 1},
+  {&__pyx_n_s_interval, __pyx_k_interval, sizeof(__pyx_k_interval), 0, 0, 1, 1},
   {&__pyx_n_s_itemsize, __pyx_k_itemsize, sizeof(__pyx_k_itemsize), 0, 0, 1, 1},
   {&__pyx_kp_s_itemsize_0_for_cython_array, __pyx_k_itemsize_0_for_cython_array, sizeof(__pyx_k_itemsize_0_for_cython_array), 0, 0, 1, 0},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
@@ -18366,7 +18793,8 @@ PyMODINIT_FUNC PyInit_ImagePreprocessing(void)
   indirect_contiguous = Py_None; Py_INCREF(Py_None);
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
-  if (__Pyx_ExportFunction("gaussian_blur", (void (*)(void))__pyx_f_4Sift_18ImagePreprocessing_gaussian_blur, "PyObject *(__Pyx_memviewslice, int __pyx_skip_dispatch, struct __pyx_opt_args_4Sift_18ImagePreprocessing_gaussian_blur *__pyx_optional_args)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("gaussian_blur", (void (*)(void))__pyx_f_4Sift_18ImagePreprocessing_gaussian_blur, "__Pyx_memviewslice (__Pyx_memviewslice, int __pyx_skip_dispatch, struct __pyx_opt_args_4Sift_18ImagePreprocessing_gaussian_blur *__pyx_optional_args)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("decimation", (void (*)(void))__pyx_f_4Sift_18ImagePreprocessing_decimation, "__Pyx_memviewslice (__Pyx_memviewslice, int __pyx_skip_dispatch, struct __pyx_opt_args_4Sift_18ImagePreprocessing_decimation *__pyx_optional_args)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   /*--- Type init code ---*/
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;

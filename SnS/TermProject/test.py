@@ -7,8 +7,7 @@ from scipy.ndimage import filters
 from pylab import *
 import time
 from scipy.misc import imsave
-from ImagePreprocessing import gaussian_blur
-from DescriptorGenerator import decimation
+from Sift.ImagePreprocessing import gaussian_blur, decimation
 
 
 def main():
@@ -18,8 +17,8 @@ def main():
     # GET TEST IMAGE
     # -----------------------------------------------------
     # -----------------------------------------------------
-    testfile = "./fig/Mercedes.jpg"
-    test_out_path = "./test_out/"
+    testfile = "./Sift/fig/Mercedes.jpg"
+    test_out_path = "./Sift/test_out/"
     if os.path.exists(test_out_path) == False:
         os.makedirs(test_out_path)
 

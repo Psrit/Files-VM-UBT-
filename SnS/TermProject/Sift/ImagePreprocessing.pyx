@@ -1,14 +1,15 @@
 # cython: profile=False
 cimport cython
 import numpy as np
-# cimport numpy as np  # move to .pxd
+# cimport numpy as np  # moved to .pxd
 
 DTYPE = np.float32
-# ctypedef np.float32_t DTYPE_t  # move to .pxd
+# ctypedef np.float32_t DTYPE_t  # moved to .pxd
+# cdef double SIGMA = 1.6  # moved to .pxd
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef gaussian_blur(DTYPE_t[:, ::1] input, double sigma=1.6, int size=-1):
+cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, double sigma=SIGMA, int size=-1):
     """
     Gaussian blurring using 2-dimensional square Gaussian kernel.
 
@@ -17,9 +18,9 @@ cpdef gaussian_blur(DTYPE_t[:, ::1] input, double sigma=1.6, int size=-1):
         Data type of input should be DTYPE (=np.float32,?). `~PIL.Image.Image`
         objects are supposed to be converted to array before sent to this
         function.
-    :param sigma: double (sequence of scalars are not supported yet; default=1.6)
+    :param sigma: double (sequence of scalars are not supported yet; default=SIGMA)
         Standard deviation for Gaussian kernel.
-        According to Lowe in his famous SIFT paper, sigma is set to be 1.6
+        According to Lowe in his famous SIFT paper, sigma is set to be SIGMA=1.6
         (default here).
     :param size: integer (sequence of scalars are not supported yet; default=-1)
         Size of the Gaussian kernel.
@@ -72,3 +73,45 @@ cpdef gaussian_blur(DTYPE_t[:, ::1] input, double sigma=1.6, int size=-1):
                     += im_conv[index, col] * gaussian_array1d[index - row + (size - 1) / 2]
 
     return im_blurred
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef DTYPE_t[:, ::1] decimation(DTYPE_t[:, ::1] input, int interval=2):
+    """
+    Downsampling the image by only keeping one pixel per (`interval`)**2 points.
+
+    :param input: ndarray or other 2-dimensional object having the buffer interface
+        Input image array.
+        Data type of input should be DTYPE (=np.float32,?). `~PIL.Image.Image`
+        objects are supposed to be converted to array before sent to this
+        function.
+    :param interval: integer (>=1; default=2)
+        For example, we keep input[0, 0], input[0, 2], input[0, 4],...
+        input[2, 0],... when interval == 1.
+    :return: memoryview of a 2-D array
+        Returned memoryview of the 2-D `DTYPE` array.
+        It has the same shape and the same data type (DTYPE) as `input`.
+
+    """
+    assert interval >= 1
+
+    cdef:
+        int row = 0, col = 0, out_row = 0, out_col = 0
+        int in_nrows = input.shape[0]
+        int in_ncols = input.shape[1]
+        int out_nrows = (in_nrows + interval - 1) // interval
+        int out_ncols = (in_ncols + interval - 1) // interval
+        DTYPE_t[:, ::1] output = np.zeros([out_nrows, out_ncols], dtype=DTYPE)
+
+    while row < in_nrows:
+        while col < in_ncols:
+            output[out_row, out_col] = input[row, col]
+            col += interval
+            out_col += 1
+        col = 0
+        out_col = 0
+        row += interval
+        out_row += 1
+
+    return output
