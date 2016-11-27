@@ -8,7 +8,7 @@ from pylab import *
 import time
 from scipy.misc import imsave
 from ImagePreprocessing import gaussian_blur
-from DescriptorGenerator import decimation
+from DOGSpaceGenerator import decimation
 
 
 def main():

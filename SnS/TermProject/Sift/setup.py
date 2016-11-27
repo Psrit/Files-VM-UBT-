@@ -7,6 +7,10 @@ ext_modules = [
               sources=["ImagePreprocessing.pyx"],
               libraries=["m"]  # Unix-like specific for libc math library
               ),
+    Extension("DOGSpaceGenerator",
+              sources=["DOGSpaceGenerator.pyx"],
+              libraries=["m"]  # Unix-like specific for libc math library
+              ),
     Extension("DescriptorGenerator",
               sources=["DescriptorGenerator.pyx"],
               libraries=["m"]  # Unix-like specific for libc math library
