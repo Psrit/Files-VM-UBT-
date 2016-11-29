@@ -52,13 +52,85 @@ cdef class GaussianOctave:
                     self.diff_scales[s - 1, r, c] = \
                         self.scales[s, r, c] - self.scales[s - 1, r, c]
 
-    # TODO
-    cdef tuple _find_exact_extremum(self, int s, int r, int c):
-        return s, r, c
+    cdef tuple _find_exact_extremum(self, int s, int r, int c, int niter=5):
+        cdef:
+            double[:, :] deriv = np.zeros((3, 1), dtype=DTYPE)
+            double[:, :] hessian3 = np.zeros((3, 3), dtype=DTYPE)
+            double ds, dr, dc
+            int i
+            int new_s = s, new_r = r, new_c = c
+            double value_of_exact_extremum
 
-    # TODO: we should apply a threshold on minimum contrast; see the docstring.
+        for i in range(0, niter):
+            # calculate the derivative vector:
+            deriv[0, 0] = (self.diff_scales[s + 1, r, c] -
+                       self.diff_scales[s - 1, r, c]) / 2
+            deriv[1, 0] = (self.diff_scales[s, r + 1, c] -
+                       self.diff_scales[s, r - 1, c]) / 2
+            deriv[2, 0] = (self.diff_scales[s, r, c + 1] -
+                       self.diff_scales[s, r, c - 1]) / 2
+
+            # calculate the Hessian matrix (on s, r, c):
+            # /ds^2
+            hessian3[0, 0] = self.diff_scales[s + 1, r, c] + \
+                self.diff_scales[s - 1, r, c] - 2 * self.diff_scales[s, r, c]
+            # /dsdr
+            hessian3[0, 1] = (self.diff_scales[s + 1, r + 1, c] +
+                self.diff_scales[s - 1, r - 1, c] - self.diff_scales[s + 1, r - 1, c]
+                - self.diff_scales[s - 1, r + 1, c]) / 4
+            hessian3[1, 0] = hessian3[0, 1]
+            # /dsdc
+            hessian3[0, 2] = (self.diff_scales[s + 1, r, c + 1] +
+                self.diff_scales[s - 1, r, c - 1] - self.diff_scales[s + 1, r, c - 1]
+                - self.diff_scales[s - 1, r, c + 1]) / 4
+            hessian3[2, 0] = hessian3[0, 1]
+            # /dr^2
+            hessian3[1, 1] = self.diff_scales[s, r + 1, c] + \
+                self.diff_scales[s, r - 1, c] - 2 * self.diff_scales[s, r, c]
+            # /drdc
+            hessian3[1, 2] = (self.diff_scales[s, r + 1, c + 1] +
+                self.diff_scales[s, r - 1, c - 1] - self.diff_scales[s, r - 1, c + 1]
+                - self.diff_scales[s, r + 1, c - 1]) / 4
+            hessian3[2, 1] = hessian3[1, 2]
+            # /dc^2
+            hessian3[2, 2] = self.diff_scales[s, r, c + 1] + \
+                self.diff_scales[s, r, c - 1] - 2 * self.diff_scales[s, r, c]
+
+            [[ds], [dr], [dc]] = -np.dot(np.linalg.inv(hessian3), deriv)
+
+            if ds > 0.5 and s <= self.nsca - 1:
+                new_s += 1
+            elif ds < -0.5 and s >= 2:
+                new_s -= 1
+
+            if dr > 0.5 and r <= self.nrows - 3:
+                new_r += 1
+            elif dr < -0.5 and r >= 2:
+                new_r -= 1
+
+            if dc > 0.5 and c <= self.nrows - 3:
+                new_r += 1
+            elif dr < -0.5 and r >= 2:
+                new_r -= 1
+
+            value_of_exact_extremum = self.diff_scales[s, r, c] + np.dot(
+                np.transpose(deriv), [[ds, dr, dc]]
+            )[0] / 2
+
+            # if (s, r, c) are unchanged:
+            if new_s == s and new_r == r and new_c == c:
+                break
+            # else, update the coordinates and go on
+            s = new_s
+            r = new_r
+            c = new_c
+
+        return s, r, c, value_of_exact_extremum
+
+    # TODO: we should apply a threshold on minimum contrast and stability; see the docstring.
     # TODO: type of threshold and its default value?
-    cdef bint _is_low_contrast(self, int s, int r, int c, double threshold=0.03):
+    cdef bint _is_low_contrast_or_unstable(self, int s, int r, int c,
+                double v, double contrast_threshold=0.03, double stability_threshold=10):
         """
         For the experiments in the 'SIFT' paper, all extrema with a value of
         |D(x, y, sigma)| less than 0.03 (which means the extrema are unstable
@@ -66,9 +138,28 @@ cdef class GaussianOctave:
         expansion (up to the quadratic terms) of the scale-space function.
 
         """
-        return False
+        cdef:
+            double[:, ::1] hessian2 = np.zeros((2, 2), dtype=DTYPE)
 
-    cdef list _find_extrema_points(self):
+        if abs(v) < contrast_threshold:
+            return False
+
+        hessian2[0, 0] = self.diff_scales[s, r + 1, c] + \
+                self.diff_scales[s, r - 1, c] - 2 * self.diff_scales[s, r, c]
+        hessian2[1, 1] = self.diff_scales[s, r, c + 1] + \
+                self.diff_scales[s, r, c - 1] - 2 * self.diff_scales[s, r, c]
+        hessian2[0, 1] = (self.diff_scales[s, r + 1, c + 1] +
+                self.diff_scales[s, r - 1, c - 1] - self.diff_scales[s, r - 1, c + 1]
+                - self.diff_scales[s, r + 1, c - 1]) / 4
+        hessian2[1, 0] = hessian2[0, 1]
+
+        if np.trace(hessian2) ** 2 / np.linalg.det(hessian2) \
+                >= (stability_threshold + 1) ** 2 / stability_threshold:
+            return False
+
+        return True
+
+    cdef list find_keypoints(self):
         cdef:
             list extrema_points = []
             int r, c, s, index = 0
@@ -88,15 +179,17 @@ cdef class GaussianOctave:
                                     is_extrema_point = False
                                     break
                     if is_extrema_point:
-                        (s, r, c) = self._find_exact_extremum(s, r, c)
-                        if not self._is_low_contrast(s, r, c):
-                            extrema_points.append((s, r, c))
+                        (s, r, c, v) = self._find_exact_extremum(s, r, c)
+                        if not self._is_low_contrast_or_unstable(s, r, c, v):
+                            extrema_points.append((r, c))
         return extrema_points
 
 
 cdef class GaussianPyramid:
     """ The Gaussian pyramid of an input image. """
-    cdef GaussianOctave[:] octaves
+    cdef:
+        list octaves
+        int noct
 
     def __init__(self, DTYPE_t[:, ::1] input, int noct,
                  int nsca, double sigma=SIGMA):
@@ -110,15 +203,21 @@ cdef class GaussianPyramid:
 
         """
         cdef:
-            list octaves = []
             GaussianOctave octave
             int o
             DTYPE_t[:, ::1] first = gaussian_blur(input, sigma)
+        self.noct = noct
+        self.octaves = []
         for o in range(0, noct):
             octave = GaussianOctave(first, nsca, sigma)
-            octaves.append(octave)
+            self.octaves.append(octave)
             first = decimation(octave.scales[nsca])
 
-    # TODO
-    cdef int[:, :, :] find_keypoints(self):
-        pass
+    cdef list find_keypoints(self):
+        """ return the list of keypoints, which are recorded in the form (r, c). """
+        cdef:
+            int o
+            list keypoints = []
+        for o in range(0, self.noct):
+            keypoints.extend(self.octaves[o].find_keypoints())
+        return keypoints
