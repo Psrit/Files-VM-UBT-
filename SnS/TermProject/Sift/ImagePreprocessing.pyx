@@ -9,7 +9,7 @@ DTYPE = np.float32
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, double sigma=SIGMA, int size=-1):
+cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, DTYPE_t sigma=SIGMA, int size=-1):
     """
     Gaussian blurring using 2-dimensional square Gaussian kernel.
 
@@ -52,6 +52,7 @@ cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, double sigma=SIGMA, i
     cdef:
         DTYPE_t sum = 0
     for index in range(0, size):
+        # print(sigma, (2 * (sigma ** 2)), np.sqrt(2 * np.pi) * sigma)
         gaussian_array1d[index] \
             = np.exp(-gaussian_array1d[index] ** 2 /
                      (2 * (sigma ** 2))) / (np.sqrt(2 * np.pi) * sigma)

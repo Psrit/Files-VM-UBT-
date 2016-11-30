@@ -6,8 +6,11 @@ from scipy import *
 from scipy.ndimage import filters
 from pylab import *
 import time
+import numpy as np
 from scipy.misc import imsave
 from Sift.ImagePreprocessing import gaussian_blur, decimation
+from Sift.DOGSpaceGenerator import GaussianPyramid
+from Sift.Math import *
 
 
 def main():
@@ -23,6 +26,7 @@ def main():
         os.makedirs(test_out_path)
 
     im = array(Image.open(testfile).convert("L"), "f")
+    im = im / 255
     # Image.fromarray(uint8(im)).save(
     #     test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_grayscale.jpg")
 
@@ -41,15 +45,34 @@ def main():
     #     test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_out10.jpg")
     # # imsave(test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_out10.jpg", uint8(im_blurred))
 
-    # DECIMATION TEST
-    # -----------------------------------------------------
-    # -----------------------------------------------------
-    im_dsam = array(decimation(im, interval=10))
-    imshow(Image.fromarray(uint8(im_dsam)))
-    Image.fromarray(uint8(im_dsam)).save(
-        test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_dsam.jpg")
-    # imsave(test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_out10.jpg", uint8(im_blurred))
-    # show()
+    # # DECIMATION TEST
+    # # -----------------------------------------------------
+    # # -----------------------------------------------------
+    # im_dsam = array(decimation(im, interval=10))
+    # imshow(Image.fromarray(uint8(im_dsam)))
+    # Image.fromarray(uint8(im_dsam)).save(
+    #     test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_dsam.jpg")
+    # # imsave(test_out_path + os.path.splitext(os.path.split(testfile)[1])[0] + "_out10.jpg", uint8(im_blurred))
+    # # show()
+
+    # GAUSSIAN Pyramid TEST
+    p = GaussianPyramid(im, 4, 4, 1.6)
+    # o = 0
+    # s = 0
+    # for octave in p.octaves:
+    #     for scale in octave.diff_scales:
+    #         # print np.array(scale).max(), np.array(scale).min()
+    #         Image.fromarray(uint8(np.array(scale) * 255)).save(
+    #             test_out_path + "pyramid_test" + os.sep +
+    #             os.path.splitext(os.path.split(testfile)[1])[0] +
+    #             "_o" + str(o) + "_s" + str(s) + ".jpg"
+    #         )
+    #         s += 1
+    #     o += 1
+    #     s = 0
+    # print("test result: ", p.find_keypoints())
+
+    # print det3(np.array([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]]))
 
 if __name__ == "__main__":
     import cProfile

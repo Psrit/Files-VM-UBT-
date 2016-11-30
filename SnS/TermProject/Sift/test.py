@@ -1,14 +1,10 @@
 # import pyximport; pyximport.install()
 
-import os
-from PIL import Image
-from scipy import *
-from scipy.ndimage import filters
 from pylab import *
-import time
-from scipy.misc import imsave
-from ImagePreprocessing import gaussian_blur
+from scipy import *
+
 from DOGSpaceGenerator import decimation
+from PIL import Image
 
 
 def main():
