@@ -104,8 +104,8 @@ cdef class GaussianOctave:
             hessian3[2, 2] = self.diff_scales[s, r, c + 1] + \
                 self.diff_scales[s, r, c - 1] - 2 * self.diff_scales[s, r, c]
 
-            if abs(mt.det(hessian3, 3)) > 10 ** (-8):
-                [[ds], [dr], [dc]] = -np.dot(np.linalg.inv(hessian3), deriv)
+            if abs(mt.det(hessian3)) > 10 ** (-8):
+                [[ds], [dr], [dc]] = -np.dot(mt.inv(hessian3), deriv)
             # if the Hessian is noninvertible, simply let the offset vector to be 0:
             else:
                 ds = 0
@@ -166,7 +166,7 @@ cdef class GaussianOctave:
                 - self.diff_scales[s, r + 1, c - 1]) / 4
         hessian2[1, 0] = hessian2[0, 1]
 
-        if np.trace(hessian2) ** 2 / mt.det(hessian2, 2) \
+        if np.trace(hessian2) ** 2 / mt.det(hessian2) \
                 < (stability_threshold + 1) ** 2 / stability_threshold:
             return False
 

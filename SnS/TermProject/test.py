@@ -74,6 +74,8 @@ def main():
 
     # print det3(np.array([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]]))
 
+
+
 if __name__ == "__main__":
     import cProfile
 
