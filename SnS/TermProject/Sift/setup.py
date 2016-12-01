@@ -13,8 +13,8 @@ ext_modules = [
               include_dirs=['.'],
               libraries=["m"]  # Unix-like specific for libc math library
               ),
-    Extension("DescriptorGenerator",
-              sources=["DescriptorGenerator.pyx"],
+    Extension("FeatureDescription",
+              sources=["FeatureDescription.pyx"],
               include_dirs=['.'],
               libraries=["m"]  # Unix-like specific for libc math library
               ),
