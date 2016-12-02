@@ -64,14 +64,15 @@ cdef class GaussianOctave:
 
     cdef tuple _find_exact_extremum(self, int s, int r, int c, int niter=5):
         cdef:
-            DTYPE_t[:, ::1] deriv = np.zeros((3, 1), dtype=DTYPE)
-            DTYPE_t[:, ::1] hessian3 = np.zeros((3, 3), dtype=DTYPE)
+            DTYPE_t[:, ::1] deriv = np.zeros([3, 1], dtype=DTYPE)
+            DTYPE_t[:, ::1] hessian3 = np.zeros([3, 3], dtype=DTYPE)
             DTYPE_t ds = 0, dr = 0, dc = 0
             int i
             int new_s = s, new_r = r, new_c = c
             DTYPE_t value_of_exact_extremum
 
-        for i in range(0, niter):
+        i = 0
+        while i < niter:
             # calculate the derivative vector:
             deriv[0, 0] = (self.diff_scales[s + 1, r, c] -
                        self.diff_scales[s - 1, r, c]) / 2
@@ -118,16 +119,28 @@ cdef class GaussianOctave:
                 new_s += 1
             elif ds < -0.5 and s >= 2:
                 new_s -= 1
+            elif abs(ds) <= 0.5:
+                pass
+            else:
+                return False
 
             if dr > 0.5 and r <= self.nrows - 3:
                 new_r += 1
             elif dr < -0.5 and r >= 2:
                 new_r -= 1
+            elif abs(dr) <= 0.5:
+                pass
+            else:
+                return False
 
-            if dc > 0.5 and c <= self.nrows - 3:
-                new_r += 1
-            elif dr < -0.5 and r >= 2:
-                new_r -= 1
+            if dc > 0.5 and c <= self.ncols - 3:
+                new_c += 1
+            elif dc < -0.5 and c >= 2:
+                new_c -= 1
+            elif abs(dc) <= 0.5:
+                pass
+            else:
+                return False
 
             value_of_exact_extremum = self.diff_scales[s, r, c] + \
                 (deriv[0, 0] * ds + deriv[1, 0] * dr + deriv[2, 0] * dc) / 2
@@ -139,6 +152,7 @@ cdef class GaussianOctave:
             s = new_s
             r = new_r
             c = new_c
+            i += 1
 
         # If the exact keypoint is still not found when the loop ends,
         # discard the point:
@@ -186,7 +200,7 @@ cdef class GaussianOctave:
             # Note the symbols ds, dr, dc have different meanings from those in
             # function _find_exact_extremum
             int ds, dr, dc
-            double s_offset, r_offset, c_offset
+            DTYPE_t s_offset = 0, r_offset = 0, c_offset = 0, v = 0
             bint is_keypoint = True
             bint is_maximum = True
             bint is_minimum = True
@@ -226,13 +240,12 @@ cdef class GaussianOctave:
                         wildcard = self._find_exact_extremum(s, r, c)
                         # If the exact extremum was not found:
                         if not wildcard:
-                            print "NONE!!!"
+                            # print "NONE!!!"
                             continue
                         # If found:
                         (s, r, c, s_offset, r_offset, c_offset, v) = wildcard
                         if not self._is_low_contrast_or_unstable(s, r, c, v):
                             # TODO: more efficient deduplication?
-                            # print "loc before assignment: ", type(loc)
                             loc = Location(self.n_oct, s, r, c)
                             p = PointFeature(loc,
                                              ((r + r_offset) * 2 ** self.n_oct,

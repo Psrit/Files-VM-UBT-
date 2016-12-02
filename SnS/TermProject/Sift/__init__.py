@@ -1,3 +1,4 @@
 # __all__ = ["ImagePreprocessing",
 #            "DOGSpaceGenerator",
-#            "DecriptorGenerator"]
+#            "FeatureDescription",
+#            "Math"]

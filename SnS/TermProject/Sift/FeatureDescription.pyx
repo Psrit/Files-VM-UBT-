@@ -74,8 +74,8 @@ cdef class PointFeature:
         self.exact_scale = exact_scale
 
     def __str__(self):
-        return "Location: " + str(self.location) + " " + \
-               "Coordinate: " + str(self.coord) + \
+        return "Location: " + str(self.location) + "\t" + \
+               "Coordinate: " + str(self.coord) + "\t" + \
                "Scale: " + str(self.exact_scale)  # + \
                # "Orientation: " + str(self.ori) + \
                # "Descriptor: " + str(self.descriptor)

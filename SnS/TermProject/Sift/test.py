@@ -3,8 +3,9 @@
 from pylab import *
 from scipy import *
 
-from DOGSpaceGenerator import decimation
 from PIL import Image
+
+from Sift.DOGSpaceGenerator import decimation
 
 
 def main():

@@ -3,12 +3,7 @@
 import os
 from PIL import Image
 from scipy import *
-from scipy.ndimage import filters
 from pylab import *
-import time
-import numpy as np
-from scipy.misc import imsave
-from Sift.ImagePreprocessing import gaussian_blur, decimation
 from Sift.DOGSpaceGenerator import GaussianPyramid
 from Sift.Math import *
 
