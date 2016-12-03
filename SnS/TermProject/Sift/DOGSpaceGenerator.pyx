@@ -3,9 +3,10 @@
 # Inside the package we can directly use module name,
 # while we must use Sift.`modulename` outside
 # # FIXME: (what's wrong with test.py inside this package?)
-# from ImagePreprocessing cimport gaussian_blur, decimation, DTYPE_t, SIGMA
+# from ImagePreprocessing cimport gaussian_blur, decimation, DTYPE_t
 from ImagePreprocessing import DTYPE
 from FeatureDescription cimport Location, PointFeature
+from Defaults import INTERP_NITER, CONTR_THR, STAB_THR, SIGMA
 cimport Math as mt
 import numpy as np
 cimport numpy as np
@@ -62,7 +63,8 @@ cdef class GaussianOctave:
 
         print("Octave initialized. ")
 
-    cdef tuple _find_exact_extremum(self, int s, int r, int c, int niter=5):
+    cdef tuple _find_exact_extremum(self, int s, int r, int c,
+                                    int niter=INTERP_NITER):
         cdef:
             DTYPE_t[:, ::1] deriv = np.zeros([3, 1], dtype=DTYPE)
             DTYPE_t[:, ::1] hessian3 = np.zeros([3, 3], dtype=DTYPE)
@@ -122,7 +124,7 @@ cdef class GaussianOctave:
             elif abs(ds) <= 0.5:
                 pass
             else:
-                return False
+                return None
 
             if dr > 0.5 and r <= self.nrows - 3:
                 new_r += 1
@@ -131,7 +133,7 @@ cdef class GaussianOctave:
             elif abs(dr) <= 0.5:
                 pass
             else:
-                return False
+                return None
 
             if dc > 0.5 and c <= self.ncols - 3:
                 new_c += 1
@@ -140,7 +142,7 @@ cdef class GaussianOctave:
             elif abs(dc) <= 0.5:
                 pass
             else:
-                return False
+                return None
 
             value_of_exact_extremum = self.diff_scales[s, r, c] + \
                 (deriv[0, 0] * ds + deriv[1, 0] * dr + deriv[2, 0] * dc) / 2
@@ -164,11 +166,12 @@ cdef class GaussianOctave:
     # TODO: we should apply a threshold on minimum contrast and stability; see the docstring.
     # TODO: type of threshold and its default value?
     cdef bint _is_low_contrast_or_unstable(self, int s, int r, int c,
-                DTYPE_t v, DTYPE_t contrast_threshold=0.03, DTYPE_t stability_threshold=10):
+                DTYPE_t v, DTYPE_t contrast_threshold=CONTR_THR,
+                DTYPE_t stability_threshold=STAB_THR):
         """
         For the experiments in the 'SIFT' paper, all extrema with a value of
-        |D(x, y, sigma)| less than 0.03 (which means the extrema are unstable
-        with low contrast) were discarded, where D(x, y, sigma) is the Taylor
+        |D(sigma, x, y)| less than 0.03 (which means the extrema are unstable
+        with low contrast) were discarded, where D(sigma, x, y) is the Taylor
         expansion (up to the quadratic terms) of the scale-space function.
 
         """

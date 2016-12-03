@@ -5,7 +5,7 @@ from scipy import *
 
 from PIL import Image
 
-from Sift.DOGSpaceGenerator import decimation
+from Sift.ImagePreprocessing import decimation
 
 
 def main():

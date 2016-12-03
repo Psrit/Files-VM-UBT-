@@ -1,6 +1,6 @@
 # cython: profile=True
-cimport numpy as np
 cimport cython
+cimport numpy as np
 import numpy as np
 from ImagePreprocessing import DTYPE
 

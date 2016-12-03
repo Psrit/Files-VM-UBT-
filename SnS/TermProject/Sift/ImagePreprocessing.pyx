@@ -2,10 +2,10 @@
 cimport cython
 import numpy as np
 # cimport numpy as np  # moved to .pxd
+from Defaults import SIGMA, DSAMP_INTVL
 
 DTYPE = np.float32
 # ctypedef np.float32_t DTYPE_t  # moved to .pxd
-# cdef double SIGMA = 1.6  # moved to .pxd
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -34,6 +34,7 @@ cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, DTYPE_t sigma=SIGMA, 
 
     """
 
+    # print SIGMA
     cdef:
         int row, col, index
         # NOTE: imrows, imcols = input.shape is WRONG
@@ -78,7 +79,7 @@ cpdef DTYPE_t[:, ::1] gaussian_blur(DTYPE_t[:, ::1] input, DTYPE_t sigma=SIGMA, 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef DTYPE_t[:, ::1] decimation(DTYPE_t[:, ::1] input, int interval=2):
+cpdef DTYPE_t[:, ::1] decimation(DTYPE_t[:, ::1] input, int interval=DSAMP_INTVL):
     """
     Downsampling the image by only keeping one pixel per (`interval`)**2 points.
 

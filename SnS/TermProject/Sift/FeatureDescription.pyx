@@ -42,7 +42,7 @@ cdef class PointFeature:
     """
     The class describing the feature of the keypoint.
 
-    Main features are:
+    Main fields are:
 
     ** location: Location
         (octave, scale, row, col) info; all elements are int.

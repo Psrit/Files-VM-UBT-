@@ -1,4 +1,4 @@
-from ImagePreprocessing cimport gaussian_blur, decimation, DTYPE_t, SIGMA
+from ImagePreprocessing cimport gaussian_blur, decimation, DTYPE_t
 # from ImagePreprocessing import DTYPE
 
 cdef class GaussianOctave:
