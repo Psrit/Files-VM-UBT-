@@ -5,8 +5,9 @@
 # # FIXME: (what's wrong with test.py inside this package?)
 # from ImagePreprocessing cimport gaussian_blur, decimation, DTYPE_t
 from ImagePreprocessing import DTYPE
+from ImagePreprocessing cimport decimation
 from FeatureDescription cimport Location, PointFeature
-from Defaults import INTERP_NITER, CONTR_THR, STAB_THR, SIGMA
+from Defaults import INTERP_NITER, CONTR_THR, STAB_THR, SIGMA, DSAMP_INTVL
 cimport Math as mt
 import numpy as np
 cimport numpy as np
@@ -273,24 +274,44 @@ cdef class GaussianPyramid:
     #     list octaves
     #     int nocts
 
-    def __init__(self, DTYPE_t[:, ::1] input, int nocts,
-                 int nscas, DTYPE_t sigma=SIGMA):
+    def __init__(self, DTYPE_t[:, ::1] input, int nocts, int nscas,
+                 DTYPE_t sigma=SIGMA, bint predesample=False,
+                 int predesample_intvl=DSAMP_INTVL):
         """
         :param input: input image (with buffer interface)
-            pixel values are normalize to [0, 1]
+            Pixel values are normalize to [0, 1]
         :param nocts: number of octaves
         :param nscas: number of scales in each octave - 3
         :param sigma: (default: SIGMA=1.6)
-            the 'bottom' image in the 'bottom' octave is blurred from
-            the original image `input` by convoluting with G_\{sigma}(x,y).
+            The 'bottom' image in the 'bottom' octave is blurred from
+            The original image `input` by convoluting with G_\{sigma}(x,y).
+        :param predesample: (default: False)
+            This parameter is to designate whether the input needs to be
+            pre-desampled/decimated before the pyramid starts to be constructed.
+        :param predesample_intvl: (default: DSAMP_INTVL=2)
+            This parameter is to designate the pre-desample interval. It will
+            only work when `predesample` is set 'True'.
 
         """
         cdef:
             GaussianOctave octave
             int o
-            DTYPE_t[:, ::1] first = gaussian_blur(input, sigma)
+            DTYPE_t[:, ::1] first
+
         self.nocts = nocts
+        self.nscas = nscas
+        self.sigma = sigma
+        self.predesample = predesample
+        self.predesample_intvl = predesample_intvl
         self.octaves = []
+
+        if predesample is False:
+            first = input
+        else:
+            first = decimation(input, predesample_intvl)
+
+        first = gaussian_blur(first, sigma)
+
         for o in range(0, nocts):
             octave = GaussianOctave(first, o, nscas, (2 ** o) * sigma)
             self.octaves.append(octave)

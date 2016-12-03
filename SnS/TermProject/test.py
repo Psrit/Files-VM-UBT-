@@ -51,7 +51,7 @@ def main():
     # # show()
 
     # GAUSSIAN Pyramid TEST
-    p = GaussianPyramid(im, 4, 4, 1.6)
+    p = GaussianPyramid(im, 4, 4, predesample=True, predesample_intvl=2)
     # o = 0
     # s = 0
     # for octave in p.octaves:

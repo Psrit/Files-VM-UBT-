@@ -17,5 +17,9 @@ cdef class GaussianPyramid:
     cdef:
         readonly list octaves
         int nocts
+        int nscas
+        DTYPE_t sigma
+        bint predesample
+        int predesample_intvl
 
     cdef list find_keypoints(self)
