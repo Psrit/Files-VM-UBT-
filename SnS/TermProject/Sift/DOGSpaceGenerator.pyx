@@ -164,8 +164,6 @@ cdef class GaussianOctave:
 
         return s, r, c, ds, dr, dc, value_of_exact_extremum
 
-    # TODO: we should apply a threshold on minimum contrast and stability; see the docstring.
-    # TODO: type of threshold and its default value?
     cdef bint _is_low_contrast_or_unstable(self, int s, int r, int c,
                 DTYPE_t v, DTYPE_t contrast_threshold=CONTR_THR,
                 DTYPE_t stability_threshold=STAB_THR):
@@ -254,7 +252,8 @@ cdef class GaussianOctave:
                             p = PointFeature(loc,
                                              ((r + r_offset) * 2 ** self.n_oct,
                                               (c + c_offset) * 2 ** self.n_oct),
-                                             s + s_offset)
+                                             s + s_offset,
+                                             self.sigma * (2 ** (s / self.nscas)))
                             if p not in extrema_points:
                                 print str(p)
                                 extrema_points.append(p)

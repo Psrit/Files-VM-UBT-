@@ -10,5 +10,6 @@ cdef class PointFeature:
         public Location location
         public tuple coord
         public double exact_scale
+        public double sigma_oct
         public double ori
         public double[::1] descriptor

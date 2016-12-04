@@ -90,6 +90,41 @@ cdef list calc_gradient(DTYPE_t[:, ::1] img, int r, int c):
     return grad
 
 
+cdef DTYPE_t[:, :, ::1] calc_keypoint_decr_hist(DTYPE_t[:, ::1] img, int r,
+            int c, DTYPE_t ori, DTYPE_t sigma_oct, int nareas=4, int nbins):
+    """
+    Calculate the gradient histogram at a keypoint.
+
+    :param img: the image where the keypoint lies
+        Same as the `img` in `calc_keypoint_ori_hist`, here `img` is also in
+        the Gaussian pyramid.
+    :param r: row number of the keypoint
+    :param c: column number of the keypoint
+    :param ori: the orientation of the keypoint
+    :param sigma_oct: the sigma of the keypoint
+        The sigma is relative to the octave the point lies in.
+    :param nareas: the number of the sampling areas
+    :param nbins: the number of the bins in each histogram
+
+    :return: the gradient histogram
+        It is a (nareas * nareas * nbins)-dimensional array.
+
+    """
+    cdef:
+        int dr, dc, rbin, cbin
+        double r_area, c_area
+        DTYPE[:, :, ::1] hist = np.zeros([nareas, nareas, nbins], dtype=DTYPE)
+        double cos_t = np.cos(ori), sin_t = np.sin(ori)
+        double area_width = sigma_oct * 3  # according to the paper
+        double radius = area_width * (2 ** 0.5) * (nbins + 1.0) * 0.5 + 0.5
+
+    for dr in range(-radius, radius + 1):
+        for dc in range(-radius, radius + 1):
+            c_rot = cos_t * c - sin_t * r
+            r_rot = sin_t * c + cos_t * r
+            c_area = c_rot / area_width + nareas / 2 - 0.5
+            r_area = r_rot / area_width + nareas / 2 - 0.5
+
 cdef class Location:
     """
     The class storing the location of the keypoint.
@@ -141,6 +176,12 @@ cdef class PointFeature:
     ** exact_scale: double
         The precise scale of the point, which is the scale number of it
         in the octave (int) plus the scale offset.
+    ** sigma_oct: double
+        The sigma of the point in the octave it lies in. Generally, for a
+        keypoint whose location is (o, s, r, c) with `sigma` as the basic
+        scale of the pyramid, sigma_oct=sigma*(2**(s/nscas)), where nscas
+        is the number of the scales in the octave. The value is given by
+        the __init__ caller.
     ** ori: double
         Orientation of keypoint.
     ** descriptor: double[::1]
@@ -152,13 +193,16 @@ cdef class PointFeature:
     #     Location location
     #     tuple coord
     #     double exact_scale
+    #     double sigma_oct
     #     double ori
     #     double[::1] descriptor
 
-    def __init__(self, Location loc, tuple coord, double exact_scale):
+    def __init__(self, Location loc, tuple coord, double exact_scale,
+                 double sigma_oct):
         self.location = loc
         self.coord = coord
         self.exact_scale = exact_scale
+        self.sigma_oct = sigma_oct
 
     def __str__(self):
         return "Location: " + str(self.location) + "\t" + \
