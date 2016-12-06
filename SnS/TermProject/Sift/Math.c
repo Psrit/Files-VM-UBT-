@@ -4334,6 +4334,7 @@ static __Pyx_memviewslice __pyx_f_4Sift_4Math_transpose(__Pyx_memviewslice __pyx
  *         for c in range(0, ncols):
  *             t[c, r] = m[r, c]             # <<<<<<<<<<<<<<
  *     return t
+ * 
  */
       __pyx_t_10 = __pyx_v_r;
       __pyx_t_11 = __pyx_v_c;
@@ -4373,6 +4374,8 @@ static __Pyx_memviewslice __pyx_f_4Sift_4Math_transpose(__Pyx_memviewslice __pyx
  *         for c in range(0, ncols):
  *             t[c, r] = m[r, c]
  *     return t             # <<<<<<<<<<<<<<
+ * 
+ * 
  */
   __PYX_INC_MEMVIEW(&__pyx_v_t, 0);
   __pyx_r = __pyx_v_t;
@@ -4404,6 +4407,55 @@ static __Pyx_memviewslice __pyx_f_4Sift_4Math_transpose(__Pyx_memviewslice __pyx
   }
   __pyx_L2:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_t, 1);
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "Sift/Math.pyx":86
+ * 
+ * 
+ * cdef double simple_parabola_interp(double l, double c, double r):             # <<<<<<<<<<<<<<
+ *     """
+ *     Simply calculate the location where the max/min value lies using
+ */
+
+static double __pyx_f_4Sift_4Math_simple_parabola_interp(double __pyx_v_l, double __pyx_v_c, double __pyx_v_r) {
+  double __pyx_r;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  double __pyx_t_1;
+  double __pyx_t_2;
+  __Pyx_RefNannySetupContext("simple_parabola_interp", 0);
+  __Pyx_TraceCall("simple_parabola_interp", __pyx_f[0], 86, 0, __PYX_ERR(0, 86, __pyx_L1_error));
+
+  /* "Sift/Math.pyx":101
+ *     """
+ * 
+ *     return 0.5 * (-l + r)/(2 * c - (l + r))             # <<<<<<<<<<<<<<
+ */
+  __pyx_t_1 = (0.5 * ((-__pyx_v_l) + __pyx_v_r));
+  __pyx_t_2 = ((2.0 * __pyx_v_c) - (__pyx_v_l + __pyx_v_r));
+  if (unlikely(__pyx_t_2 == 0)) {
+    PyErr_SetString(PyExc_ZeroDivisionError, "float division");
+    __PYX_ERR(0, 101, __pyx_L1_error)
+  }
+  __pyx_r = (__pyx_t_1 / __pyx_t_2);
+  goto __pyx_L0;
+
+  /* "Sift/Math.pyx":86
+ * 
+ * 
+ * cdef double simple_parabola_interp(double l, double c, double r):             # <<<<<<<<<<<<<<
+ *     """
+ *     Simply calculate the location where the max/min value lies using
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_WriteUnraisable("Sift.Math.simple_parabola_interp", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
   __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
@@ -20381,6 +20433,7 @@ PyMODINIT_FUNC PyInit_Math(void)
   /*--- Function export code ---*/
   if (__Pyx_ExportFunction("det", (void (*)(void))__pyx_f_4Sift_4Math_det, "__pyx_t_4Sift_18ImagePreprocessing_DTYPE_t (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ExportFunction("inv", (void (*)(void))__pyx_f_4Sift_4Math_inv, "__Pyx_memviewslice (__Pyx_memviewslice)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("simple_parabola_interp", (void (*)(void))__pyx_f_4Sift_4Math_simple_parabola_interp, "double (double, double, double)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   /*--- Type init code ---*/
   __pyx_type_4Sift_4Math_MathError.tp_base = (&((PyTypeObject*)PyExc_Exception)[0]);
   if (PyType_Ready(&__pyx_type_4Sift_4Math_MathError) < 0) __PYX_ERR(0, 7, __pyx_L1_error)

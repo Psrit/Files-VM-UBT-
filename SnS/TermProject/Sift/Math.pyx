@@ -81,3 +81,21 @@ cdef DTYPE_t[:, :] transpose(DTYPE_t[:, ::1] m):
         for c in range(0, ncols):
             t[c, r] = m[r, c]
     return t
+
+
+cdef double simple_parabola_interp(double l, double c, double r):
+    """
+    Simply calculate the location where the max/min value lies using
+    three values of the quadratic function f(x) at x=-1, 0, 1.
+
+    If l+r=2c, f(x) mustn't be a quadratic function. So simply raise
+    a ZeroDivisionError.
+
+    :param l: f(-1)
+    :param c: f(0)
+    :param r: f(1)
+    :return: xm which makes f(xm) become the max/min.
+
+    """
+
+    return 0.5 * (-l + r)/(2 * c - (l + r))
