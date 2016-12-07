@@ -52,7 +52,9 @@ def main():
 
     # GAUSSIAN Pyramid TEST
     p = GaussianPyramid(im, 4, 4)  # , predesample=True, predesample_intvl=2)
-    print p.find_features()
+    for feature in p.features:
+        print str(feature)
+    p.save_feature_txt(filename="Mercedes")
     # o = 0
     # s = 0
     # for octave in p.octaves:

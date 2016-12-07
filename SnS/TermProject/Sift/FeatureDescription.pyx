@@ -70,6 +70,7 @@ cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list):
                     max_bin += nbins
                 elif max_bin >= nbins:
                     max_bin -= nbins
+                # now 0 <= max_bin < nbins
 
                 temp_feature = PointFeature(loc, coord, exact_scale, sigma_oct)
                 temp_feature.ori = max_bin * pi2 / nbins  # - np.pi ?
@@ -99,7 +100,7 @@ cdef DTYPE_t[::1] calc_keypoint_ori_hist(DTYPE_t[:, ::1] img, int r, int c,
 
     :return: the orientation histogram of a certain keypoint
         The n-th bin in the histogram represents the sum of maginitudes of the
-        gradients whose directions lies in range [(n/bins)*2*pi-hbw, (n/bins)
+        gradients whose directions lie in range [(n/bins)*2*pi-hbw, (n/bins)
         *2*pi+hbw), where `hbw` means the half width of the angular range area
         represented by the bin, equalling to pi/bin.
 
@@ -176,7 +177,7 @@ cdef DTYPE_t[:, :, ::1] calc_keypoint_decr_hist(DTYPE_t[:, ::1] img, int r,
         double cos_t = np.cos(main_ori), sin_t = np.sin(main_ori)
         double area_width = sigma_oct * 3  # according to the paper
         int radius = int(area_width * (2 ** 0.5) * (nbins + 1.0) * 0.5 + 0.5)
-        double mag, ori, grad_ori, weight
+        double mag, ori, weight
         double pi2 = 2 * np.pi
         double bins_per_rad = nbins / pi2
         double exp_denom = (nareas ** 2) * 0.5
@@ -192,14 +193,15 @@ cdef DTYPE_t[:, :, ::1] calc_keypoint_decr_hist(DTYPE_t[:, ::1] img, int r,
             # of the circle whose radius is `radius`:
             if -1.0 < r_area < nareas and -1.0 < c_area < nareas:
                 if calc_gradient(img, r + dr, c + dc, &mag, &ori):
-                    grad_ori -= ori
-                    while grad_ori < 0.0:
-                        grad_ori += pi2
-                    while grad_ori >= pi2:
-                        grad_ori -= pi2
-                    n_bin = grad_ori * bins_per_rad
+                    ori -= main_ori
+                    while ori < 0.0:
+                        ori += pi2
+                    while ori >= pi2:
+                        ori -= pi2
+                    n_bin = ori * bins_per_rad
                     weight = np.exp(-(c_rot ** 2 + r_rot ** 2) / exp_denom)
-                    interp_hist(hist, r_area, c_area, n_bin, nareas, nbins, mag)
+                    interp_hist(hist, r_area, c_area, n_bin,
+                                nareas, nbins, mag * weight)
     return hist
 
 
@@ -231,7 +233,7 @@ cdef interp_hist(DTYPE_t[:, :, ::1] hist, double r_area, double c_area,
 
 
 
-cdef double[::1] calc_descriptor(
+cdef int_t[::1] calc_descriptor(
         DTYPE_t[:, ::1] img, int r, int c, double main_ori, double sigma_oct,
         int nareas=4, int nbins=8):
     """
@@ -259,6 +261,7 @@ cdef double[::1] calc_descriptor(
         int ri, ci, ni, i, length, int_value
         double norm2 = 0, value
         # list desc = []
+        # here `descriptor` is still of double[::1] type:
         double[::1] descriptor = np.array([])
 
     for ri in range(0, nareas):
@@ -269,7 +272,6 @@ cdef double[::1] calc_descriptor(
                 norm2 += value ** 2
     length = len(descriptor)
 
-    print np.array(descriptor)
     normalize(&descriptor[0], length, norm2)
 
     for i in range(0, length):
@@ -279,10 +281,15 @@ cdef double[::1] calc_descriptor(
     normalize(&descriptor[0], length)
 
     for i in range(0, length):
+        # print "descriptor[" + str(i) + "](before) " + str(descriptor[i])
         int_value = int(DESCR_MAG_THR * descriptor[i])
+        # print "int_value" + str(int_value)
         descriptor[i] = min(255, int_value)
+        # print "descriptor[" + str(i) + "](after) " + str(descriptor[i])
 
-    return descriptor
+    # print "print in calc_descriptor: ", np.array(descriptor)
+    # Copy the array, and cast it to a specified type (int):
+    return np.array(descriptor).astype(int)
 
 
 
@@ -361,7 +368,7 @@ cdef class PointFeature:
         the __init__ caller.
     ** ori: double
         Orientation of keypoint.
-    ** descriptor: double[::1]
+    ** descriptor: int_t[::1]
         The descriptor vector of the keypoint.
 
     """
@@ -372,7 +379,7 @@ cdef class PointFeature:
     #     double exact_scale
     #     double sigma_oct
     #     double ori
-    #     double[::1] descriptor
+    #     int_t[::1] descriptor
 
     def __init__(self, Location loc, tuple coord, double exact_scale,
                  double sigma_oct):
@@ -380,13 +387,15 @@ cdef class PointFeature:
         self.coord = coord
         self.exact_scale = exact_scale
         self.sigma_oct = sigma_oct
+        # it seems that Memoryview must be initialized if...
+        self.descriptor = np.array([], dtype=int)
 
     def __str__(self):
         return "Location: " + str(self.location) + "\t" + \
                "Coordinate: " + str(self.coord) + "\t" + \
-               "Scale: " + str(self.exact_scale)  # + \
-               # "Orientation: " + str(self.ori) + \
-               # "Descriptor: " + str(self.descriptor)
+               "Scale: " + str(self.exact_scale)   + "\n" + \
+               "Orientation (rad; [0, 2pi)): " + str(self.ori) + "\n" + \
+               "Descriptor: " + "\n" + str(np.array(self.descriptor))
 
     def __richcmp__(self, other, int op):
         if op == Py_EQ:

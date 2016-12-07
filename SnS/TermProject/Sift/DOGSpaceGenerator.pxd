@@ -23,4 +23,6 @@ cdef class GaussianPyramid:
         int predesample_intvl
         public list features
 
-    cdef list find_keypoints(self)
+    cdef list _find_keypoints(self)
+    cdef list _find_features(self)
+    cpdef save_feature_txt(self, filename, path=*, timestamp=*)

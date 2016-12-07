@@ -7,7 +7,8 @@
 from ImagePreprocessing import DTYPE
 from ImagePreprocessing cimport decimation
 from FeatureDescription cimport *
-from Defaults import INTERP_NITER, CONTR_THR, STAB_THR, SIGMA, DSAMP_INTVL
+from Defaults import INTERP_NITER, CONTR_THR, STAB_THR, SIGMA, \
+    DSAMP_INTVL, OUT_PATH
 cimport Math as mt
 import numpy as np
 cimport numpy as np
@@ -255,7 +256,7 @@ cdef class GaussianOctave:
                                              s + s_offset,
                                              self.sigma * (2 ** (s / self.nscas)))
                             if p not in extrema_points:
-                                print str(p)
+                                # print str(p)
                                 extrema_points.append(p)
 
                     # RESET!!!
@@ -303,8 +304,6 @@ cdef class GaussianPyramid:
         self.predesample = predesample
         self.predesample_intvl = predesample_intvl
         self.octaves = []
-        self.features
-
 
         if predesample is False:
             first = input
@@ -318,9 +317,9 @@ cdef class GaussianPyramid:
             self.octaves.append(octave)
             first = decimation(octave.scales[nscas])
         print("Pyramid initialized. ")
-        self.features = self.find_keypoints()
+        self.features = self._find_features()
 
-    cdef list find_keypoints(self):
+    cdef list _find_keypoints(self):
         """
         return the list of keypoints, which are recorded in the form:
         [[o=0, s0, r0, c0], [o=0, s1, r1, c1],...]
@@ -332,23 +331,28 @@ cdef class GaussianPyramid:
         print("Start finding keypoints...")
         for o in range(0, self.nocts):
             kpts.extend(self.octaves[o].find_keypoints_in_octave())
+        print("Finish finding keypoints...")
         return kpts
 
-    @property
-    def keypoints(self):
-        return self.find_keypoints()
-
-    def find_features(self):
+    cdef list _find_features(self):
         """
         return the list of keypoint features.
 
         """
         cdef:
-            list features = self.features
+            list features
             int i, o, s, r, c
             PointFeature feature
 
+        print("Start finding feature descriptors...")
+
+        # find the keypoints
+        features = self._find_keypoints()
+
+        # calculate the keypoints' orientation
         features = calc_keypoints_ori(self, features)
+
+        # calculate the keypoints' feature descriptor vector
         for i in range(0, len(features)):
             feature = features[i]
             o = feature.location.octave
@@ -359,5 +363,43 @@ cdef class GaussianPyramid:
                 self.octaves[o].scales[s], r, c,
                 feature.ori,
                 feature.sigma_oct)
+            # print "print in _find_features: ", np.array(feature.descriptor)
 
+        print("Finish finding feature descriptors...")
         return features
+
+    cpdef save_feature_txt(self, filename, path=OUT_PATH, timestamp=True):
+        import os, time
+
+        if not path.endswith(os.sep):
+            filename = os.sep.join([path, filename])
+        else:
+            filename = "".join([path, filename])
+
+        if timestamp:
+            timenow = int(time.time())
+            time_array = time.localtime(timenow)
+            time_str = time.strftime("_%Y%m%d_%H%M%S")
+            filename += time_str
+
+        filename = os.extsep.join([filename, "txt"])
+
+        if os.path.exists(filename):
+            print("File '{0}' exists. Writing cancelled.".format(filename))
+            return
+
+        if os.path.exists(path) == False:
+            os.makedirs(path)
+            print("Path '{0}' doesn't exist. Create it.".format(path))
+
+        f = open(filename, "w")
+        f.write("row_coord" + "\t" + "col_coord" + "\t" + "exact_scale" +
+                "\t" + "orientation" + "\t" + "descriptor" + "\n")
+        for feature in self.features:
+            f.write(str(feature.coord[0]) + "\t" +
+                    str(feature.coord[1]) + "\t" +
+                    str(feature.sigma_oct) + "\t" +
+                    str(feature.ori) + "\t" +
+                    str(np.array(feature.descriptor)) + "\n")
+        f.close()
+        print("Features saved in '{0}'.".format(filename))
