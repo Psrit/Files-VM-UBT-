@@ -6,7 +6,7 @@
 # from ImagePreprocessing cimport gaussian_blur, decimation, DTYPE_t
 from ImagePreprocessing import DTYPE
 from ImagePreprocessing cimport decimation
-from FeatureDescription cimport Location, PointFeature
+from FeatureDescription cimport *
 from Defaults import INTERP_NITER, CONTR_THR, STAB_THR, SIGMA, DSAMP_INTVL
 cimport Math as mt
 import numpy as np
@@ -303,6 +303,8 @@ cdef class GaussianPyramid:
         self.predesample = predesample
         self.predesample_intvl = predesample_intvl
         self.octaves = []
+        self.features
+
 
         if predesample is False:
             first = input
@@ -316,7 +318,7 @@ cdef class GaussianPyramid:
             self.octaves.append(octave)
             first = decimation(octave.scales[nscas])
         print("Pyramid initialized. ")
-        self.find_keypoints()
+        self.features = self.find_keypoints()
 
     cdef list find_keypoints(self):
         """
@@ -336,6 +338,26 @@ cdef class GaussianPyramid:
     def keypoints(self):
         return self.find_keypoints()
 
-    @property
-    def features(self):
-        pass
+    def find_features(self):
+        """
+        return the list of keypoint features.
+
+        """
+        cdef:
+            list features = self.features
+            int i, o, s, r, c
+            PointFeature feature
+
+        features = calc_keypoints_ori(self, features)
+        for i in range(0, len(features)):
+            feature = features[i]
+            o = feature.location.octave
+            s = feature.location.scale
+            r = feature.location.row
+            c = feature.location.col
+            feature.descriptor = calc_descriptor(
+                self.octaves[o].scales[s], r, c,
+                feature.ori,
+                feature.sigma_oct)
+
+        return features

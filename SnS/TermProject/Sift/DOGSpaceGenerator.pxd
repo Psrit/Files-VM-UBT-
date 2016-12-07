@@ -3,7 +3,7 @@ from ImagePreprocessing cimport gaussian_blur, decimation, DTYPE_t
 
 cdef class GaussianOctave:
     cdef:
-        DTYPE_t[:, :, ::1] scales
+        readonly DTYPE_t[:, :, ::1] scales
         readonly DTYPE_t[:, :, ::1] diff_scales
         int nscas, nrows, ncols, n_oct
         DTYPE_t sigma
@@ -21,5 +21,6 @@ cdef class GaussianPyramid:
         DTYPE_t sigma
         bint predesample
         int predesample_intvl
+        public list features
 
     cdef list find_keypoints(self)

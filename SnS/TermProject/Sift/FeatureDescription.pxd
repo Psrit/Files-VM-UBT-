@@ -1,3 +1,12 @@
+from ImagePreprocessing cimport DTYPE_t
+from DOGSpaceGenerator cimport GaussianPyramid
+
+cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list)
+
+cdef double[::1] calc_descriptor(
+        DTYPE_t[:, ::1] img, int r, int c, double main_ori, double sigma_oct,
+        int nareas=*, int nbins=*)
+
 cdef class Location:
     cdef:
         # Public to other Cython files and Python.

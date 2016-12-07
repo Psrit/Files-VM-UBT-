@@ -5,22 +5,27 @@ import numpy as np
 from cpython.object cimport Py_LT, Py_LE, Py_EQ, Py_NE, Py_GT, Py_GE
 from ImagePreprocessing cimport DTYPE_t
 from ImagePreprocessing import DTYPE
-from DOGSpaceGenerator cimport GaussianPyramid
+from DOGSpaceGenerator cimport GaussianPyramid, GaussianOctave
 from Math cimport simple_parabola_interp
 # from Defaults import *  # error???
 from Defaults import ORI_HIST_BINS, ORI_HIST_SEARCH_RADIUS, \
     ORI_HIST_SEARCH_SIGMA_FCTR, DESCR_MAG_THR, ORI_PEAK_RATIO
 
 
-# TODO: TO BE COMPLETED
-
 
 cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list):
     """
     Calculate the main orientation of the keypoint.
 
-    :param feature_list
-    :return: new_list
+    :param feature_list: list
+        It is the input list of keypoint features whose orientations are not
+        calculated.
+    :return: new_list: list
+        A new list of the keypoint features whose orientations are calculated.
+        A single keypoint may have several copies in the list with different
+        main orientations because those directions in which the value of the
+        histogram reaches ORI_PEAK_RATIO times the maximum value are all
+        counted in.
 
     """
     cdef:
@@ -47,10 +52,10 @@ cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list):
         c = feature.location.col
         loc = feature.location
         coord = feature.coord
-        exact_scale = feature.exact_sca
+        exact_scale = feature.exact_scale
         sigma_oct = feature.sigma_oct
 
-        hist = calc_keypoint_ori_hist(GaussianPyramid.octaves[o].scales[s],
+        hist = calc_keypoint_ori_hist(pyramid.octaves[o].scales[s],
                     r, c, round(ORI_HIST_SEARCH_RADIUS * sigma_oct),
                     ORI_HIST_SEARCH_SIGMA_FCTR * sigma_oct)
         mag_max = max(hist)
@@ -104,7 +109,7 @@ cdef DTYPE_t[::1] calc_keypoint_ori_hist(DTYPE_t[:, ::1] img, int r, int c,
         double weight, mag, ori
         # the denominator in the exp of the gaussian function
         DTYPE_t exp_denom = 2.0 * sigma * sigma
-        DTYPE_t[::1] hist = np.zeros([1, bins], dtype=DTYPE)
+        DTYPE_t[::1] hist = np.zeros(bins, dtype=DTYPE)
 
     for dr in range(-radius, radius + 1):
         for dc in range(-radius, radius + 1):
@@ -161,19 +166,7 @@ cdef DTYPE_t[:, :, ::1] calc_keypoint_decr_hist(DTYPE_t[:, ::1] img, int r,
     """
     Calculate the gradient histogram at a keypoint.
 
-    :param img: the image where the keypoint lies
-        Same as the `img` in `calc_keypoint_ori_hist`, here `img` is also in
-        the Gaussian pyramid.
-    :param r: row number of the keypoint
-    :param c: column number of the keypoint
-    :param ori: the orientation of the keypoint
-    :param sigma_oct: the sigma of the keypoint
-        The sigma is relative to the octave the point lies in.
-    :param nareas: the number of the sampling areas
-    :param nbins: the number of the bins in each histogram
-
-    :return: the gradient histogram
-        It is a (nareas * nareas * nbins)-dimensional array.
+    The meaning of the parameters are same as those in calc_descriptor.
 
     """
     cdef:
@@ -190,8 +183,8 @@ cdef DTYPE_t[:, :, ::1] calc_keypoint_decr_hist(DTYPE_t[:, ::1] img, int r,
 
     for dr in range(-radius, radius + 1):
         for dc in range(-radius, radius + 1):
-            c_rot = cos_t * c - sin_t * r
-            r_rot = sin_t * c + cos_t * r
+            c_rot = cos_t * dc - sin_t * dr
+            r_rot = sin_t * dc + cos_t * dr
             c_area = c_rot / area_width + nareas / 2 - 0.5
             r_area = r_rot / area_width + nareas / 2 - 0.5
 
@@ -232,18 +225,32 @@ cdef interp_hist(DTYPE_t[:, :, ::1] hist, double r_area, double c_area,
                     v *= (1.0 - dc if c_i == 0 else dc)
                     for n_i in range(0, 2):
                         # `n` is always valid since the bin is 'cyclic' for n:
-                        n = (n0 + n_i) % n
+                        n = (n0 + n_i) % nbins
                         v *= (1.0 - dn if n_i == 0 else dn)
                         hist[r, c, n] += v
 
 
 
 cdef double[::1] calc_descriptor(
-        DTYPE_t[:, ::1] img, int r, int c, int main_ori, int sigma_oct,
+        DTYPE_t[:, ::1] img, int r, int c, double main_ori, double sigma_oct,
         int nareas=4, int nbins=8):
     """
     Pass parameters to calc_keypoint_decr_hist to get the descriptor histogram,
     and transform it into the descriptor vector.
+
+    :param img: the image where the keypoint lies
+        Same as the `img` in `calc_keypoint_ori_hist`, here `img` is also in
+        the Gaussian pyramid.
+    :param r: row number of the keypoint
+    :param c: column number of the keypoint
+    :param main_ori: the orientation of the keypoint
+    :param sigma_oct: the sigma of the keypoint
+        The sigma is relative to the octave the point lies in.
+    :param nareas: the number of the sampling areas
+    :param nbins: the number of the bins in each histogram
+
+    :return: the gradient histogram
+        It is a (nareas * nareas * nbins)-dimensional array.
 
     """
     cdef:
@@ -262,6 +269,7 @@ cdef double[::1] calc_descriptor(
                 norm2 += value ** 2
     length = len(descriptor)
 
+    print np.array(descriptor)
     normalize(&descriptor[0], length, norm2)
 
     for i in range(0, length):
