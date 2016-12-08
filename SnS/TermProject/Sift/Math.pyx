@@ -1,4 +1,7 @@
 # cython: profile=True
+# cython: boundscheck=False
+# cython: wraparound=False
+
 cimport cython
 cimport numpy as np
 import numpy as np

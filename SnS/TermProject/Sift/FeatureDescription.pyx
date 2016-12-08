@@ -1,4 +1,6 @@
 # cython: profile=True
+# cython: boundscheck=False
+# cython: wraparound=False
 
 cimport cython
 import numpy as np
@@ -9,7 +11,9 @@ from DOGSpaceGenerator cimport GaussianPyramid, GaussianOctave
 from Math cimport simple_parabola_interp
 # from Defaults import *  # error???
 from Defaults import ORI_HIST_BINS, ORI_HIST_SEARCH_RADIUS, \
-    ORI_HIST_SEARCH_SIGMA_FCTR, DESCR_MAG_THR, ORI_PEAK_RATIO
+    ORI_HIST_SEARCH_SIGMA_FCTR, DESCR_MAG_THR, ORI_PEAK_RATIO, \
+    DESCR_HIST_AREAS, DESCR_HIST_BINS, DESCR_TO_INT_FCTR, \
+    ORI_HIST_SMOOTH_STEPS
 
 
 
@@ -17,9 +21,12 @@ cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list):
     """
     Calculate the main orientation of the keypoint.
 
+    :param pyramid" GaussianPyramid
+        It is the GaussianPyramid where the keypoints come from.
     :param feature_list: list
         It is the input list of keypoint features whose orientations are not
         calculated.
+
     :return: new_list: list
         A new list of the keypoint features whose orientations are calculated.
         A single keypoint may have several copies in the list with different
@@ -29,7 +36,7 @@ cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list):
 
     """
     cdef:
-        int i, li, ri
+        int i, li, ri, smooth_i
         int o, s, r, c, n, nbins = ORI_HIST_BINS
         double mag_max, mag_thr, max_bin
 
@@ -37,7 +44,7 @@ cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list):
         Location loc
         tuple coord
         double exact_scale
-        double sigma_oct
+        double sigma_oct, sigma_abs
 
         double pi2 = 2 * np.pi
         DTYPE_t[::1] hist
@@ -54,10 +61,14 @@ cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list):
         coord = feature.coord
         exact_scale = feature.exact_scale
         sigma_oct = feature.sigma_oct
+        sigma_abs = feature.sigma_abs
 
         hist = calc_keypoint_ori_hist(pyramid.octaves[o].scales[s],
                     r, c, round(ORI_HIST_SEARCH_RADIUS * sigma_oct),
                     ORI_HIST_SEARCH_SIGMA_FCTR * sigma_oct)
+        for smooth_i in range(0, ORI_HIST_SMOOTH_STEPS):
+            smooth_hist(hist, ORI_HIST_BINS)
+
         mag_max = max(hist)
         mag_thr = mag_max * ORI_PEAK_RATIO
 
@@ -72,7 +83,8 @@ cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list):
                     max_bin -= nbins
                 # now 0 <= max_bin < nbins
 
-                temp_feature = PointFeature(loc, coord, exact_scale, sigma_oct)
+                temp_feature = PointFeature(loc, coord,
+                                            exact_scale, sigma_oct, sigma_abs)
                 temp_feature.ori = max_bin * pi2 / nbins  # - np.pi ?
 
                 new_list.append(temp_feature)
@@ -80,25 +92,33 @@ cdef list calc_keypoints_ori(GaussianPyramid pyramid, list feature_list):
     return new_list
 
 
+
 cdef DTYPE_t[::1] calc_keypoint_ori_hist(DTYPE_t[:, ::1] img, int r, int c,
                             int radius, DTYPE_t sigma, int bins=ORI_HIST_BINS):
     """
     Calculate the orientation histogram of a certain keypoint.
 
-    :param img: the image where the keypoint lies
+    :param img: DTYPE_t[::1]
+        # the image where the keypoint lies #
         The image is in the Gaussian pyramid (`scales` of the GaussianOctave),
         instead of the DoG pyramid (`diff_scales`), although `loc` is got from
         the DoG pyramid.
-    :param r: the row number of the keypoint
-    :param c: the column number of the keypoint
+    :param r: int
+        # the row number of the keypoint #
+    :param c: int
+        # the column number of the keypoint #
         Here we simply use `r`, `c` as the location of the keypoint in the
         Gaussian pyramid.
-    :param radius: radius of the searching area
-    :param sigma: the weight of Gaussian function used in summing up all nearby
-        points' gradient
-    :param bins: number of bins in the histogram (default: ORI_HIST_BINS=36)
+    :param radius: int
+        # radius of the searching area #
+    :param sigma: DTYPE_t
+        # the weight of Gaussian function used in summing up all nearby
+        points' gradient #
+    :param bins: int
+        # number of bins in the histogram (default: ORI_HIST_BINS=36) #
 
-    :return: the orientation histogram of a certain keypoint
+    :return: DTYPE_t[::1]
+        # the orientation histogram of a certain keypoint #
         The n-th bin in the histogram represents the sum of maginitudes of the
         gradients whose directions lie in range [(n/bins)*2*pi-hbw, (n/bins)
         *2*pi+hbw), where `hbw` means the half width of the angular range area
@@ -114,7 +134,7 @@ cdef DTYPE_t[::1] calc_keypoint_ori_hist(DTYPE_t[:, ::1] img, int r, int c,
 
     for dr in range(-radius, radius + 1):
         for dc in range(-radius, radius + 1):
-            calc_gradient(img, r, c, &mag, &ori)
+            calc_gradient(img, r + dr, c + dc, &mag, &ori)
             weight = np.exp(-(dr * dr + dc * dc) / exp_denom)
             n = round(bins * ori / (2 * np.pi))
             if n == bins:
@@ -125,25 +145,43 @@ cdef DTYPE_t[::1] calc_keypoint_ori_hist(DTYPE_t[:, ::1] img, int r, int c,
 
 
 
+cdef smooth_hist(DTYPE_t[::1] hist, int nbins):
+    cdef:
+        int i
+        double prev = hist[nbins - 1], temp, h0 = hist[0]
+
+    for i in range(0, nbins):
+        temp = hist[i]
+        hist[i] = 0.25 * prev + 0.5 * hist[i] + \
+            0.25 * (hist[i + 1] if i + 1 != nbins else h0)
+        prev = temp
+
+
+
 cdef bint calc_gradient(DTYPE_t[:, ::1] img, int r, int c,
                         double* mag, double* ori):
     """
     Calculate the gradient at a certain point.
 
-    :param img: the image where the keypoint lies
+    :param img: DTYPE_t[:, ::1]
+        # the image where the keypoint lies #
         Same as the `img` in `calc_keypoint_ori_hist`, here `img` is also in
         the Gaussian pyramid.
-    :param r: row number of the keypoint
-    :param c: column number of the keypoint
-    :param mag: the pointer of the double which stores the magnitude value
-    :param ori: the pointer of the double which stores the orientation value
-
-    :return: True of False
+    :param r: int
+        # row number of the keypoint #
+    :param c: int
+        # column number of the keypoint #
+    :param mag: double*
+        # the pointer of the double which stores the magnitude value #
+    :param ori: double*
+  {built-in method mainloop}       # the pointer of th {built-in method mainloop}e double which stores the orientation value #
+ {built-in method mainloop}
+    :return: bint
+        # True of False #
         If the given `r`, `c` are invalid, return False; otherwise return True.
 
     """
     cdef:
-        list grad
         DTYPE_t grad_x
         DTYPE_t grad_y
     if 0 < r < img.shape[0] - 1 and 0 < c < img.shape[1] - 1:
@@ -163,7 +201,8 @@ cdef bint calc_gradient(DTYPE_t[:, ::1] img, int r, int c,
 
 
 cdef DTYPE_t[:, :, ::1] calc_keypoint_decr_hist(DTYPE_t[:, ::1] img, int r,
-        int c, DTYPE_t main_ori, DTYPE_t sigma_oct, int nareas=4, int nbins=8):
+        int c, DTYPE_t main_ori, DTYPE_t sigma_oct,
+        int nareas=DESCR_HIST_AREAS, int nbins=DESCR_HIST_BINS):
     """
     Calculate the gradient histogram at a keypoint.
 
@@ -235,23 +274,31 @@ cdef interp_hist(DTYPE_t[:, :, ::1] hist, double r_area, double c_area,
 
 cdef int_t[::1] calc_descriptor(
         DTYPE_t[:, ::1] img, int r, int c, double main_ori, double sigma_oct,
-        int nareas=4, int nbins=8):
+        int nareas=DESCR_HIST_AREAS, int nbins=DESCR_HIST_BINS):
     """
     Pass parameters to calc_keypoint_decr_hist to get the descriptor histogram,
     and transform it into the descriptor vector.
 
-    :param img: the image where the keypoint lies
+    :param img: DTYPE_t[:, ::1]
+        # the image where the keypoint lies
         Same as the `img` in `calc_keypoint_ori_hist`, here `img` is also in
         the Gaussian pyramid.
-    :param r: row number of the keypoint
-    :param c: column number of the keypoint
-    :param main_ori: the orientation of the keypoint
-    :param sigma_oct: the sigma of the keypoint
+    :param r: int
+        # row number of the keypoint #
+    :param c: int
+        # column number of the keypoint #
+    :param main_ori: double
+        # the orientation of the keypoint #
+    :param sigma_oct: double
+        # the sigma of the keypoint #
         The sigma is relative to the octave the point lies in.
-    :param nareas: the number of the sampling areas
-    :param nbins: the number of the bins in each histogram
+    :param nareas: int
+        # the number of the sampling areas #
+    :param nbins: int
+        # the number of the bins in each histogram #
 
-    :return: the gradient histogram
+    :return: int_t[::1]
+        # the gradient histogram #
         It is a (nareas * nareas * nbins)-dimensional array.
 
     """
@@ -282,7 +329,7 @@ cdef int_t[::1] calc_descriptor(
 
     for i in range(0, length):
         # print "descriptor[" + str(i) + "](before) " + str(descriptor[i])
-        int_value = int(DESCR_MAG_THR * descriptor[i])
+        int_value = int(DESCR_TO_INT_FCTR * descriptor[i])
         # print "int_value" + str(int_value)
         descriptor[i] = min(255, int_value)
         # print "descriptor[" + str(i) + "](after) " + str(descriptor[i])
@@ -349,27 +396,33 @@ cdef class PointFeature:
     Main fields are:
 
     ** location: Location
-        (octave, scale, row, col) info; all elements are int.
-        `row` and `col` are values relative to the blurred image.
-        See class `Location`.
+        # (octave, scale, row, col) info #
+        All elements of `Location` are int. `row` and `col` are values
+        relative to the blurred image. See class `Location`.
     ** coord: tuple
-        Row-col coordinate of the exact keypoint in the ORIGINAL image.
+        # Row-col coordinate of the exact keypoint in the ORIGINAL image #
         This means:
             coord[0] = (row + row_offset) * 2 ** octave
             coord[1] = (col + col_offset) * 2 ** octave
     ** exact_scale: double
-        The precise scale of the point, which is the scale number of it
-        in the octave (int) plus the scale offset.
+        # The precise scale of the point #
+        It equals to the scale number of it in the octave (int) plus the scale
+        offset.
     ** sigma_oct: double
-        The sigma of the point in the octave it lies in. Generally, for a
-        keypoint whose location is (o, s, r, c) with `sigma` as the basic
-        scale of the pyramid, sigma_oct=sigma*(2**(s/nscas)), where nscas
-        is the number of the scales in the octave. The value is given by
-        the __init__ caller.
+        # The 'relative' sigma of the point in the octave it lies in #
+        Generally, for a keypoint whose location is (o, s, r, c) with `sigma0`
+        as the basic scale of the pyramid,
+            sigma_oct = sigma0 * (2.0 ** (s / nscas)),
+        where nscas is the number of the scales in the octave. The value is
+        given by the __init__ caller.
+    ** sigma_abs: double
+        # The absolute sigma of the point in the DoG pyramid #
+        It is calculated from:
+    		sigma_abs = sigma0 * (2.0 ** (o + s / nscas))
     ** ori: double
-        Orientation of keypoint.
+        # Orientation of keypoint #
     ** descriptor: int_t[::1]
-        The descriptor vector of the keypoint.
+        # The descriptor vector of the keypoint #
 
     """
     # moved to .pxd
@@ -382,18 +435,19 @@ cdef class PointFeature:
     #     int_t[::1] descriptor
 
     def __init__(self, Location loc, tuple coord, double exact_scale,
-                 double sigma_oct):
+                 double sigma_oct, double sigma_abs):
         self.location = loc
         self.coord = coord
         self.exact_scale = exact_scale
         self.sigma_oct = sigma_oct
+        self.sigma_abs = sigma_abs
         # it seems that Memoryview must be initialized if...
         self.descriptor = np.array([], dtype=int)
 
     def __str__(self):
         return "Location: " + str(self.location) + "\t" + \
                "Coordinate: " + str(self.coord) + "\t" + \
-               "Scale: " + str(self.exact_scale)   + "\n" + \
+               "Scale: " + str(self.sigma_abs) + "\n" + \
                "Orientation (rad; [0, 2pi)): " + str(self.ori) + "\n" + \
                "Descriptor: " + "\n" + str(np.array(self.descriptor))
 

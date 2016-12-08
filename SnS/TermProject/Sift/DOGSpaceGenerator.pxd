@@ -6,7 +6,7 @@ cdef class GaussianOctave:
         readonly DTYPE_t[:, :, ::1] scales
         readonly DTYPE_t[:, :, ::1] diff_scales
         int nscas, nrows, ncols, n_oct
-        DTYPE_t sigma
+        DTYPE_t sigma0
 
     cdef tuple _find_exact_extremum(self, int s, int r, int c, int niter=*)
     cdef bint _is_low_contrast_or_unstable(self, int s, int r, int c,

@@ -1,4 +1,4 @@
-# cython: profile=False
+# cython: profile=True
 cimport cython
 import numpy as np
 # cimport numpy as np  # moved to .pxd
@@ -90,7 +90,8 @@ cpdef DTYPE_t[:, ::1] decimation(DTYPE_t[:, ::1] input, int interval=DSAMP_INTVL
         function.
     :param interval: integer (>=1; default=2)
         For example, we keep input[0, 0], input[0, 2], input[0, 4],...
-        input[2, 0],... when interval == 1.
+        input[2, 0],... when interval == 2.
+        If inteval == 1, the output image is the same as the input image.
     :return: memoryview of a 2-D array
         Returned memoryview of the 2-D `DTYPE` array.
         It has the same shape and the same data type (DTYPE) as `input`.

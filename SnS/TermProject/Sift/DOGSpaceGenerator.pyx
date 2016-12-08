@@ -7,7 +7,7 @@
 from ImagePreprocessing import DTYPE
 from ImagePreprocessing cimport decimation
 from FeatureDescription cimport *
-from Defaults import INTERP_NITER, CONTR_THR, STAB_THR, SIGMA, \
+from Defaults import SCALES, INTERP_STEPS, CONTR_THR, STAB_THR, SIGMA, \
     DSAMP_INTVL, OUT_PATH
 cimport Math as mt
 import numpy as np
@@ -30,10 +30,12 @@ cdef class GaussianOctave:
     nscas: int
         Number of keypoints, which satisfies: number of images in the octave =
         `nscas`+3
-    sigma: DTYPE_t
-        `sigma` is the basic Gaussian parameter which means the 'bottom' image
-        in the 'bottom' octave is blurred from the original image by convoluting
-        with G_\{sigma}(x,y).
+    sigma0: DTYPE_t
+        `sigma0` is the basic Gaussian parameter which means the 'bottom' image
+        in the 'BOTTOM' octave is blurred from the original image by convoluting
+        with G_\{sigma0}(x,y).
+        Therefore, the 'bottom' image of 'THIS' octave is blurred from the
+        original image by convoluting with G_\{(2 ** (n_oct)) * sigma0}(x,y).
 
     """
     # moved to .pxd for debugging
@@ -41,23 +43,26 @@ cdef class GaussianOctave:
     #     DTYPE_t[:, :, ::1] scales
     #     readonly DTYPE_t[:, :, ::1] diff_scales
     #     int nscas, nrows, ncols, n_oct
-    #     DTYPE_t sigma
+    #     DTYPE_t sigma0
 
     def __init__(self, DTYPE_t[:, ::1] input, int o, int nscas, DTYPE_t sigma):
-        cdef int s, r, c
+        cdef:
+            int s, r, c
+            double sigma_base
         self.nrows = input.shape[0]
         self.ncols = input.shape[1]
         self.nscas = nscas
         self.n_oct = o
-        self.sigma = sigma
+        self.sigma0 = sigma
         self.diff_scales = np.zeros([nscas + 2, self.nrows, self.ncols], dtype=DTYPE)
         self.scales = np.zeros([nscas + 3, self.nrows, self.ncols], dtype=DTYPE)
 
+        sigma_base = (2 ** o) * sigma
         self.scales[0] = input
         for s in range(1, nscas + 3):
             self.scales[s] = gaussian_blur(self.scales[s - 1],
                     (2 ** (2.0 * s / nscas) - 2 ** (2.0 * (s - 1) / nscas)) ** 0.5
-                                           * sigma)
+                                           * sigma_base)
             for r in range(0, self.nrows):
                 for c in range(0, self.ncols):
                     self.diff_scales[s - 1, r, c] = \
@@ -66,29 +71,34 @@ cdef class GaussianOctave:
         print("Octave initialized. ")
 
     cdef tuple _find_exact_extremum(self, int s, int r, int c,
-                                    int niter=INTERP_NITER):
+                                    int niter=INTERP_STEPS):
         cdef:
             DTYPE_t[:, ::1] deriv = np.zeros([3, 1], dtype=DTYPE)
             DTYPE_t[:, ::1] hessian3 = np.zeros([3, 3], dtype=DTYPE)
             DTYPE_t ds = 0, dr = 0, dc = 0
             int i
             int new_s = s, new_r = r, new_c = c
+            DTYPE_t v
             DTYPE_t value_of_exact_extremum
 
         i = 0
         while i < niter:
+            v =  self.diff_scales[s, r, c]
             # calculate the derivative vector:
+            # ds
             deriv[0, 0] = (self.diff_scales[s + 1, r, c] -
-                       self.diff_scales[s - 1, r, c]) / 2
+                       self.diff_scales[s - 1, r, c]) / 2.0
+            # dr
             deriv[1, 0] = (self.diff_scales[s, r + 1, c] -
-                       self.diff_scales[s, r - 1, c]) / 2
+                       self.diff_scales[s, r - 1, c]) / 2.0
+            # dc
             deriv[2, 0] = (self.diff_scales[s, r, c + 1] -
-                       self.diff_scales[s, r, c - 1]) / 2
+                       self.diff_scales[s, r, c - 1]) / 2.0
 
             # calculate the Hessian matrix (on s, r, c):
             # /ds^2
             hessian3[0, 0] = self.diff_scales[s + 1, r, c] + \
-                self.diff_scales[s - 1, r, c] - 2 * self.diff_scales[s, r, c]
+                self.diff_scales[s - 1, r, c] - 2 * v
             # /dsdr
             hessian3[0, 1] = (self.diff_scales[s + 1, r + 1, c] +
                 self.diff_scales[s - 1, r - 1, c] - self.diff_scales[s + 1, r - 1, c]
@@ -101,7 +111,7 @@ cdef class GaussianOctave:
             hessian3[2, 0] = hessian3[0, 1]
             # /dr^2
             hessian3[1, 1] = self.diff_scales[s, r + 1, c] + \
-                self.diff_scales[s, r - 1, c] - 2 * self.diff_scales[s, r, c]
+                self.diff_scales[s, r - 1, c] - 2 * v
             # /drdc
             hessian3[1, 2] = (self.diff_scales[s, r + 1, c + 1] +
                 self.diff_scales[s, r - 1, c - 1] - self.diff_scales[s, r - 1, c + 1]
@@ -109,9 +119,9 @@ cdef class GaussianOctave:
             hessian3[2, 1] = hessian3[1, 2]
             # /dc^2
             hessian3[2, 2] = self.diff_scales[s, r, c + 1] + \
-                self.diff_scales[s, r, c - 1] - 2 * self.diff_scales[s, r, c]
+                self.diff_scales[s, r, c - 1] - 2 * v
 
-            if abs(mt.det(hessian3)) > 10 ** (-8):
+            if abs(mt.det(hessian3)) > 0:
                 [[ds], [dr], [dc]] = -np.dot(mt.inv(hessian3), deriv)
             # if the Hessian is noninvertible, simply let the offset vector to be 0:
             else:
@@ -119,40 +129,50 @@ cdef class GaussianOctave:
                 dr = 0
                 dc = 0
 
-            if ds > 0.5 and s <= self.nscas - 1:
-                new_s += 1
-            elif ds < -0.5 and s >= 2:
-                new_s -= 1
-            elif abs(ds) <= 0.5:
-                pass
-            else:
-                return None
-
-            if dr > 0.5 and r <= self.nrows - 3:
-                new_r += 1
-            elif dr < -0.5 and r >= 2:
-                new_r -= 1
-            elif abs(dr) <= 0.5:
-                pass
-            else:
-                return None
-
-            if dc > 0.5 and c <= self.ncols - 3:
-                new_c += 1
-            elif dc < -0.5 and c >= 2:
-                new_c -= 1
-            elif abs(dc) <= 0.5:
-                pass
-            else:
-                return None
-
-            value_of_exact_extremum = self.diff_scales[s, r, c] + \
-                (deriv[0, 0] * ds + deriv[1, 0] * dr + deriv[2, 0] * dc) / 2
+            # if ds > 0.5 and s <= self.nscas - 1:
+            #     new_s += 1
+            # elif ds < -0.5 and s >= 2:
+            #     new_s -= 1
+            # elif abs(ds) <= 0.5:
+            #     pass
+            # else:
+            #     return None
+            #
+            # if dr > 0.5 and r <= self.nrows - 3:
+            #     new_r += 1
+            # elif dr < -0.5 and r >= 2:
+            #     new_r -= 1
+            # elif abs(dr) <= 0.5:
+            #     pass
+            # else:
+            #     return None
+            #
+            # if dc > 0.5 and c <= self.ncols - 3:
+            #     new_c += 1
+            # elif dc < -0.5 and c >= 2:
+            #     new_c -= 1
+            # elif abs(dc) <= 0.5:
+            #     pass
+            # else:
+            #     return None
 
             # if (s, r, c) are unchanged:
-            if new_s == s and new_r == r and new_c == c:
+            if abs(ds) < 0.5 and abs(dr) < 0.5 and abs(dc) < 0.5:
+                value_of_exact_extremum = v + \
+                    0.5 * (deriv[0, 0] * ds + deriv[1, 0] * dr + deriv[2, 0] * dc)
                 break
-            # else, update the coordinates and go on
+
+            # otherwise:
+            new_s += round(ds)
+            new_r += round(dr)
+            new_c += round(dc)
+
+            if new_s < 1 or new_s > self.nscas or \
+               new_r < 1 or new_r > self.nrows - 2 or \
+               new_c < 1 or new_c > self.ncols - 2:
+                return None
+
+            # update the coordinates and go on
             s = new_s
             r = new_r
             c = new_c
@@ -177,8 +197,9 @@ cdef class GaussianOctave:
         """
         cdef:
             DTYPE_t[:, ::1] hessian2 = np.zeros((2, 2), dtype=DTYPE)
+            DTYPE_t det
 
-        if abs(v) < contrast_threshold:
+        if abs(v) < contrast_threshold / self.nscas:
             return True
 
         hessian2[0, 0] = self.diff_scales[s, r + 1, c] + \
@@ -190,7 +211,12 @@ cdef class GaussianOctave:
                 - self.diff_scales[s, r + 1, c - 1]) / 4
         hessian2[1, 0] = hessian2[0, 1]
 
-        if np.trace(hessian2) ** 2 / mt.det(hessian2) \
+        det = mt.det(hessian2)
+
+        if det <= 0:
+            return True
+
+        if np.trace(hessian2) ** 2 / det \
                 < (stability_threshold + 1) ** 2 / stability_threshold:
             return False
 
@@ -248,13 +274,16 @@ cdef class GaussianOctave:
                         # If found:
                         (s, r, c, s_offset, r_offset, c_offset, v) = wildcard
                         if not self._is_low_contrast_or_unstable(s, r, c, v):
-                            # TODO: more efficient deduplication?
                             loc = Location(self.n_oct, s, r, c)
-                            p = PointFeature(loc,
-                                             ((r + r_offset) * 2 ** self.n_oct,
-                                              (c + c_offset) * 2 ** self.n_oct),
-                                             s + s_offset,
-                                             self.sigma * (2 ** (s / self.nscas)))
+                            p = PointFeature(
+                                loc,
+                                ((r + r_offset) * 2.0 ** self.n_oct,
+                                 (c + c_offset) * 2.0 ** self.n_oct),
+                                s + s_offset,
+                                self.sigma0 * (2.0 ** (1.0 * s / self.nscas)),
+                                self.sigma0 * (2.0 ** (self.n_oct + 1.0 * s / self.nscas))
+                                )
+                            # TODO: more efficient deduplication?
                             if p not in extrema_points:
                                 # print str(p)
                                 extrema_points.append(p)
@@ -274,13 +303,18 @@ cdef class GaussianPyramid:
     #     list octaves
     #     int nocts
 
-    def __init__(self, DTYPE_t[:, ::1] input, int nocts, int nscas,
+    def __init__(self, DTYPE_t[:, ::1] input, int nocts=-1, int nscas=SCALES,
                  DTYPE_t sigma=SIGMA, bint predesample=False,
                  int predesample_intvl=DSAMP_INTVL):
         """
         :param input: input image (with buffer interface)
             Pixel values are normalize to [0, 1]
         :param nocts: number of octaves
+            If given <=0, then nocts will be calculated accroding to:
+                nocts = log(min(input.width, input.height)) / log(2) - 2.
+            (why not use:
+                nocts = int(log(min(input.width, input.height)) / log(2)) + 1
+            ?)
         :param nscas: number of scales in each octave - 3
         :param sigma: (default: SIGMA=1.6)
             The 'bottom' image in the 'bottom' octave is blurred from
@@ -298,12 +332,18 @@ cdef class GaussianPyramid:
             int o
             DTYPE_t[:, ::1] first
 
-        self.nocts = nocts
         self.nscas = nscas
         self.sigma = sigma
         self.predesample = predesample
         self.predesample_intvl = predesample_intvl
         self.octaves = []
+
+        if nocts <= 0:
+            self.nocts = int(np.log(min(input.shape[0], input.shape[1])) /
+                             np.log(2)) - 2
+            # print(self.nocts)
+        else:
+            self.nocts = nocts
 
         if predesample is False:
             first = input
@@ -312,8 +352,8 @@ cdef class GaussianPyramid:
 
         first = gaussian_blur(first, sigma)
 
-        for o in range(0, nocts):
-            octave = GaussianOctave(first, o, nscas, (2 ** o) * sigma)
+        for o in range(0, self.nocts):
+            octave = GaussianOctave(first, o, nscas, sigma)
             self.octaves.append(octave)
             first = decimation(octave.scales[nscas])
         print("Pyramid initialized. ")
@@ -393,12 +433,12 @@ cdef class GaussianPyramid:
             print("Path '{0}' doesn't exist. Create it.".format(path))
 
         f = open(filename, "w")
-        f.write("row_coord" + "\t" + "col_coord" + "\t" + "exact_scale" +
+        f.write("row_coord" + "\t" + "col_coord" + "\t" + "scale" +
                 "\t" + "orientation" + "\t" + "descriptor" + "\n")
         for feature in self.features:
             f.write(str(feature.coord[0]) + "\t" +
                     str(feature.coord[1]) + "\t" +
-                    str(feature.sigma_oct) + "\t" +
+                    str(feature.sigma_abs) + "\t" +
                     str(feature.ori) + "\t" +
                     str(np.array(feature.descriptor)) + "\n")
         f.close()

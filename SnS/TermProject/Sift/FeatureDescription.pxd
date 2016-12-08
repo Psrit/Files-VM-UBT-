@@ -21,5 +21,6 @@ cdef class PointFeature:
         public tuple coord
         public double exact_scale
         public double sigma_oct
+        public double sigma_abs
         public double ori
         public int_t[::1] descriptor
