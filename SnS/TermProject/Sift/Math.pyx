@@ -16,7 +16,7 @@ cdef class NonSquareError(MathError):
 cdef class NonInvertibleError(MathError):
     pass
 
-cdef DTYPE_t det(DTYPE_t[:, ::1] m) except *:
+cpdef DTYPE_t det(DTYPE_t[:, ::1] m) except *:
     """ Only 2x2 and 3x3 square matrices are supported. """
     cdef int dim = m.shape[0]
 
@@ -33,7 +33,7 @@ cdef DTYPE_t det(DTYPE_t[:, ::1] m) except *:
     elif dim == 2:
         return -m[0, 1] * m[1, 0] + m[0, 0] * m[1, 1]
 
-cdef DTYPE_t[:, ::1] inv(DTYPE_t[:, ::1] m) except *:
+cpdef DTYPE_t[:, ::1] inv(DTYPE_t[:, ::1] m) except *:
     """ Only 2x2 and 3x3 square matrices are supported. """
     cdef:
         int dim = m.shape[0]

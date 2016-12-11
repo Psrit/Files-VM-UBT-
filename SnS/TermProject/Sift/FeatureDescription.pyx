@@ -174,8 +174,8 @@ cdef bint calc_gradient(DTYPE_t[:, ::1] img, int r, int c,
     :param mag: double*
         # the pointer of the double which stores the magnitude value #
     :param ori: double*
-  {built-in method mainloop}       # the pointer of th {built-in method mainloop}e double which stores the orientation value #
- {built-in method mainloop}
+        # the pointer of the double which stores the orientation value #
+
     :return: bint
         # True of False #
         If the given `r`, `c` are invalid, return False; otherwise return True.
@@ -200,8 +200,8 @@ cdef bint calc_gradient(DTYPE_t[:, ::1] img, int r, int c,
 
 
 
-cdef DTYPE_t[:, :, ::1] calc_keypoint_decr_hist(DTYPE_t[:, ::1] img, int r,
-        int c, DTYPE_t main_ori, DTYPE_t sigma_oct,
+cdef DTYPE_t[:, :, ::1] calc_keypoint_decr_hist(DTYPE_t[:, ::1] img,
+        int r, int c, DTYPE_t main_ori, DTYPE_t sigma_oct,
         int nareas=DESCR_HIST_AREAS, int nbins=DESCR_HIST_BINS):
     """
     Calculate the gradient histogram at a keypoint.
@@ -212,7 +212,8 @@ cdef DTYPE_t[:, :, ::1] calc_keypoint_decr_hist(DTYPE_t[:, ::1] img, int r,
     cdef:
         int dr, dc
         double r_area, c_area, n_bin
-        DTYPE_t[:, :, ::1] hist = np.zeros([nareas, nareas, nbins], dtype=DTYPE)
+        DTYPE_t[:, :, ::1] hist = np.zeros([nareas, nareas, nbins],
+                                               dtype=DTYPE)
         double cos_t = np.cos(main_ori), sin_t = np.sin(main_ori)
         double area_width = sigma_oct * 3  # according to the paper
         int radius = int(area_width * (2 ** 0.5) * (nbins + 1.0) * 0.5 + 0.5)
@@ -272,7 +273,7 @@ cdef interp_hist(DTYPE_t[:, :, ::1] hist, double r_area, double c_area,
 
 
 
-cdef int_t[::1] calc_descriptor(
+cdef np.int_t[::1] calc_descriptor(
         DTYPE_t[:, ::1] img, int r, int c, double main_ori, double sigma_oct,
         int nareas=DESCR_HIST_AREAS, int nbins=DESCR_HIST_BINS):
     """

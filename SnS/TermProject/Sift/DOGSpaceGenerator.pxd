@@ -1,4 +1,6 @@
 from ImagePreprocessing cimport gaussian_blur, decimation, DTYPE_t
+import numpy as np
+cimport numpy as np
 # from ImagePreprocessing import DTYPE
 
 cdef class GaussianOctave:
